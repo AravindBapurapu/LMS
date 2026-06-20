@@ -1,0 +1,317 @@
+{% extends 'faculty/base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="welcome-card">
+                <i class="fas fa-chalkboard-teacher fa-4x text-primary mb-4"></i>
+                <h1 class="display-4 mb-4">Welcome to Faculty Portal</h1>
+                <p class="lead mb-5">Join our team of expert educators and shape the future of learning</p>
+                
+                {% if not application %}
+                    <!-- Not applied yet -->
+                    <button class="btn btn-primary btn-lg" onclick="openApplyModal()">
+                        <i class="fas fa-file-signature me-2"></i>Apply to Become a Faculty
+                    </button>
+                    
+                {% elif application.status == 'under_process' %}
+                    <!-- Application under process -->
+                    <div class="alert alert-info">
+                        <i class="fas fa-hourglass-half me-2"></i>
+                        Your application is under review. We'll notify you once it's processed.
+                    </div>
+                    
+                {% elif application.status == 'approved' %}
+                    <!-- Application approved -->
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        Congratulations! Your application is approved. 
+                        <a href="{% url 'faculty:dashboard' %}" class="alert-link">Go to Dashboard</a>
+                    </div>
+                    
+                {% elif application.status == 'rejected' %}
+                    <!-- Application rejected -->
+                    <div class="alert alert-danger">
+                        <i class="fas fa-times-circle me-2"></i>
+                        We regret to inform you that your application was not approved at this time.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Apply Modal -->
+<div class="modal fade" id="applyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-signature me-2"></i>
+                    Faculty Application Form
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="applyForm" method="post" action="{% url 'faculty:apply_faculty' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" name="name" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email *</label>
+                            <input type="email" class="form-control" name="email" required value="{{ request.user.email }}">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone *</label>
+                            <input type="tel" class="form-control" name="phone" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Years of Experience *</label>
+                            <input type="number" class="form-control" name="experience" required min="0">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Highest Qualification *</label>
+                            <input type="text" class="form-control" name="qualification" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Area of Expertise *</label>
+                            <input type="text" class="form-control" name="expertise" required>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Professional Bio *</label>
+                            <textarea class="form-control" name="bio" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Upload Certificates *</label>
+                            <input type="file" class="form-control" name="document" accept=".pdf,.doc,.docx" required>
+                            <small class="text-muted">PDF, DOC, DOCX (Max 5MB)</small>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Upload Resume *</label>
+                            <input type="file" class="form-control" name="resume" accept=".pdf,.doc,.docx" required>
+                            <small class="text-muted">PDF, DOC, DOCX (Max 5MB)</small>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="online_mode" id="onlineMode">
+                                <label class="form-check-label" for="onlineMode">
+                                    Available for online teaching
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="terms_accepted" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a> *
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Application
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Faculty Agreement Terms</h6>
+                <p>By applying to become a faculty member, you agree to:</p>
+                <ul>
+                    <li>Provide accurate and truthful information</li>
+                    <li>Maintain professional conduct at all times</li>
+                    <li>Deliver high-quality educational content</li>
+                    <li>Respect intellectual property rights</li>
+                    <li>Follow the institution's guidelines and policies</li>
+                </ul>
+                <p>Your application will be reviewed by the administration. Approval is at the sole discretion of the institution.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --primary-color: #4361ee;
+    --secondary-color: #4895ef;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-card i {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.btn-primary {
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: transform 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(67, 97, 238, 0.4);
+}
+
+.alert {
+    border-radius: 15px;
+    padding: 1.5rem;
+    border: none;
+}
+
+.modal-content {
+    border-radius: 20px;
+}
+
+.modal-header {
+    border-radius: 20px 20px 0 0;
+}
+
+.form-control, .form-check-input {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 10px 15px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: none;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+</style>
+
+{% block scripts %}
+<script>
+(function() {
+    function openApplyModal() {
+        var modal = new bootstrap.Modal(document.getElementById('applyModal'));
+        modal.show();
+    }
+
+    function safeToast(message, type) {
+        if (typeof showToast === 'function') {
+            showToast(message, type);
+        } else {
+            alert(message);
+        }
+    }
+
+    var loadingSpinner = $('#loadingSpinner');
+
+    $('#applyForm').on('submit', function(e) {
+        e.preventDefault();
+
+        var documentInput = document.querySelector("input[name='document']");
+        var resumeInput = document.querySelector("input[name='resume']");
+        if (!documentInput?.files.length || !resumeInput?.files.length) {
+            safeToast('Please upload both certificates and resume before submitting.', 'error');
+            return;
+        }
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '{% url "faculty:apply_faculty" %}',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            beforeSend: function() {
+                if (loadingSpinner.length) {
+                    loadingSpinner.addClass('show');
+                }
+            },
+            success: function(response) {
+                if (loadingSpinner.length) {
+                    loadingSpinner.removeClass('show');
+                }
+
+                if (response.status === 'success') {
+                    var modal = bootstrap.Modal.getInstance(document.getElementById('applyModal'));
+                    modal.hide();
+                    safeToast('Application submitted successfully!', 'success');
+                    setTimeout(function() {
+                        location.reload();
+                    }, 2000);
+                    return;
+                }
+
+                safeToast('Unexpected response from server', 'error');
+            },
+            error: function(xhr) {
+                if (loadingSpinner.length) {
+                    loadingSpinner.removeClass('show');
+                }
+
+                if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    var errors = xhr.responseJSON.errors;
+                    for (var field in errors) {
+                        safeToast(field + ': ' + errors[field][0], 'error');
+                    }
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    safeToast(xhr.responseJSON.message, 'error');
+                } else if (xhr.responseText) {
+                    safeToast('Server error: ' + xhr.responseText, 'error');
+                } else {
+                    safeToast('Error submitting application', 'error');
+                }
+            }
+        });
+    });
+
+    window.openApplyModal = openApplyModal;
+})();
+</script>
+{% endblock %}
+{% endblock %}

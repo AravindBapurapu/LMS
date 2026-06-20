@@ -1,0 +1,72 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}Login - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card shadow-lg" style="border-radius: 15px; overflow: hidden;">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h3><i class="fas fa-sign-in-alt"></i> Login to Your Account</h3>
+                <p class="mb-0">Access your enrolled courses</p>
+            </div>
+
+            <div class="card-body p-5">
+                {% if form.errors %}
+                    <div class="alert alert-danger-custom">
+                        <i class="fas fa-exclamation-circle"></i> Login failed. Please check your credentials.
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label"><strong>Username</strong></label>
+                        <input type="text" class="form-control" id="id_username" name="username" 
+                               placeholder="Enter your username" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label"><strong>Password</strong></label>
+                        <input type="password" class="form-control" id="id_password" name="password" 
+                               placeholder="Enter your password" required>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom w-100 py-2 mb-3">
+                        <i class="fas fa-lock"></i> Login
+                    </button>
+                </form>
+
+                <div class="text-center">
+                    <p class="text-muted mb-0">
+                        Don't have an account? 
+                        <a href="{% url 'course_enroller:register' %}" class="text-primary fw-bold">Register here</a>
+                    </p>
+                </div>
+
+                <hr>
+
+                <div class="text-center">
+                    <a href="{% url 'course_enroller:browse' %}" class="text-primary small">
+                        <i class="fas fa-arrow-left"></i> Back to Browse
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="alert alert-info-custom mt-4">
+            <h6><i class="fas fa-info-circle"></i> Demo Credentials</h6>
+            <p class="mb-0">You can use any valid username and password to login. For demo purposes, create a new account.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

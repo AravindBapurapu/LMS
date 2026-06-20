@@ -1,0 +1,137 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}Dashboard - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-tachometer-alt"></i> Dashboard
+        </h2>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-book fa-2x" style="color: #007bff;"></i>
+            <h4>{{ total_enrolled }}</h4>
+            <p>Courses Enrolled</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-rupiah-sign fa-2x" style="color: #28a745;"></i>
+            <h4>₹{{ total_spent|floatformat:0 }}</h4>
+            <p>Amount Spent</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-certificate fa-2x" style="color: #ffc107;"></i>
+            <h4>{{ certificates_count }}</h4>
+            <p>Certificates</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-play-circle fa-2x" style="color: #e83e8c;"></i>
+            <h4>{{ recent_watchings.count }}</h4>
+            <p>Videos Watched</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <!-- Recent Courses -->
+    <div class="col-md-8">
+        <h4 class="mb-4">
+            <i class="fas fa-history"></i> Recent Courses
+        </h4>
+        {% if enrollments %}
+            <div class="row">
+                {% for enrollment in enrollments %}
+                    <div class="col-md-6 mb-4">
+                        <div class="course-card">
+                            {% if enrollment.course.thumbnail %}
+                                <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}"
+                                     class="card-img-top">
+                            {% else %}
+                                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-book-open fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ enrollment.course.title }}</h5>
+                                <p class="card-text small text-muted">{{ enrollment.course.description|truncatewords:15 }}</p>
+                                <p class="course-price">₹{{ enrollment.course.price }}</p>
+                                <a href="{% url 'course_enroller:watch' enrollment.course.slug %}" class="btn btn-primary-custom btn-sm w-100">
+                                    <i class="fas fa-play"></i> Continue Learning
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info-custom">
+                <i class="fas fa-info-circle"></i> You haven't enrolled in any courses yet.
+                <a href="{% url 'course_enroller:browse' %}">Browse Courses</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="sidebar mb-4">
+            <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+            <a href="{% url 'course_enroller:browse' %}" class="btn btn-primary-custom w-100 mb-2">
+                <i class="fas fa-search"></i> Browse Courses
+            </a>
+            <a href="{% url 'course_enroller:my_enrollments' %}" class="btn btn-secondary-custom w-100 mb-2">
+                <i class="fas fa-list"></i> View All Courses
+            </a>
+            <a href="{% url 'course_enroller:profile' %}" class="btn btn-outline-primary w-100">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+        </div>
+
+        <!-- Recent Activity -->
+        {% if recent_watchings %}
+            <div class="sidebar">
+                <h5><i class="fas fa-fire"></i> Recent Activity</h5>
+                <ul class="list-unstyled">
+                    {% for history in recent_watchings|slice:":5" %}
+                        <li class="mb-3 pb-3 border-bottom">
+                            <small class="text-muted">{{ history.last_watched_at|timesince }} ago</small>
+                            <p class="mb-0"><strong>{{ history.video.id }}</strong></p>
+                            <small class="text-muted">{{ history.enrollment.course.title }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <!-- Recommended Courses -->
+        {% if recommended_courses %}
+            <div class="sidebar">
+                <h5><i class="fas fa-star"></i> Recommended</h5>
+                <ul class="list-unstyled">
+                    {% for course in recommended_courses|slice:":3" %}
+                        <li class="mb-3 pb-3 border-bottom">
+                            <strong>{{ course.title }}</strong>
+                            <p class="course-price mb-2">₹{{ course.price }}</p>
+                            <a href="{% url 'course_enroller:course_detail' course.slug %}" class="btn btn-primary-custom btn-sm btn-block"
+                               style="width: 100%;">
+                                View Course
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

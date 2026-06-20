@@ -1,0 +1,136 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}Profile - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-user-circle"></i> My Profile
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Profile Stats -->
+    <div class="col-md-12 mb-4">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-book fa-2x" style="color: #007bff;"></i>
+                    <h4>{{ total_enrolled }}</h4>
+                    <p>Courses Enrolled</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-rupiah-sign fa-2x" style="color: #28a745;"></i>
+                    <h4>₹{{ total_spent|floatformat:0 }}</h4>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-certificate fa-2x" style="color: #ffc107;"></i>
+                    <h4>{{ certificates }}</h4>
+                    <p>Certificates</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-3">
+                <div class="stat-card">
+                    <i class="fas fa-calendar-alt fa-2x" style="color: #e83e8c;"></i>
+                    <h4>{{ enroller_profile.date_joined|date:"Y" }}</h4>
+                    <p>Member Since</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5>Edit Profile</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="id_first_name" 
+                                   value="{{ user.first_name }}" disabled>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="id_last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="id_last_name" 
+                                   value="{{ user.last_name }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="id_email" 
+                               value="{{ user.email }}" disabled>
+                    </div>
+
+                    {% if form %}
+                        {{ form.as_p }}
+                    {% else %}
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Phone Number</label>
+                            <input type="text" class="form-control" id="id_phone" name="phone" 
+                                   value="{{ enroller_profile.phone }}" placeholder="Your phone number">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_bio" class="form-label">Bio</label>
+                            <textarea class="form-control" id="id_bio" name="bio" rows="4" 
+                                      placeholder="Tell us about yourself">{{ enroller_profile.bio }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_avatar" class="form-label">Avatar</label>
+                            <div class="mb-2">
+                                {% if enroller_profile.avatar %}
+                                    <img src="{{ enroller_profile.avatar.url }}" alt="Avatar" 
+                                         style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover;">
+                                {% endif %}
+                            </div>
+                            <input type="file" class="form-control" id="id_avatar" name="avatar" accept="image/*">
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary-custom">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <div class="sidebar mb-4">
+            <h5><i class="fas fa-user"></i> Account Info</h5>
+            <ul class="list-unstyled">
+                <li class="mb-2"><strong>Username:</strong> {{ user.username }}</li>
+                <li class="mb-2"><strong>Email:</strong> {{ user.email }}</li>
+                <li class="mb-2"><strong>Member Since:</strong> {{ enroller_profile.date_joined|date:"M d, Y" }}</li>
+                <li class="mb-2"><strong>Status:</strong> <span class="badge bg-success">Active</span></li>
+            </ul>
+        </div>
+
+        <div class="sidebar mb-4">
+            <h5><i class="fas fa-cog"></i> Settings</h5>
+            <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+            <a href="#" class="btn btn-outline-danger w-100">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

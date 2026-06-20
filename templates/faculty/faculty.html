@@ -1,0 +1,140 @@
+{% extends 'faculty/base.html' %}
+{% block title %}Home{% endblock %}
+{% block page_title %}Home{% endblock %}
+{% block page_subtitle %}Quick access to all sections{% endblock %}
+
+{% block content %}
+<style>
+    .nav-card {
+        height: 190px;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.18);
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+        background-size: cover;
+        background-position: center;
+        display: block;
+        text-decoration: none;
+    }
+
+    .nav-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.6));
+        z-index: 1;
+    }
+
+    .nav-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 32px rgba(0,0,0,0.28);
+    }
+
+    .nav-card .card-body-inner {
+        position: absolute;
+        z-index: 2;
+        bottom: 0; left: 0; right: 0;
+        padding: 16px 18px;
+    }
+
+    .nav-card .card-icon {
+        position: absolute;
+        z-index: 2;
+        top: 16px; right: 16px;
+        width: 36px; height: 36px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 10px;
+        display: flex; align-items: center; justify-content: center;
+        backdrop-filter: blur(4px);
+    }
+
+    .nav-card .card-icon i { color: #fff; font-size: 15px; }
+
+    .nav-card .card-label {
+        color: #fff;
+        font-weight: 700;
+        font-size: 1rem;
+        margin: 0;
+        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    .nav-card .card-sub {
+        color: rgba(255,255,255,0.78);
+        font-size: 0.74rem;
+        margin-top: 3px;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+</style>
+
+<div class="row g-4">
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:dashboard' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-tachometer-alt"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">Dashboard</p>
+                <p class="card-sub">Stats & overview</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:my_courses' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1513258496099-48168024aec0?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-book-open"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">My Courses</p>
+                <p class="card-sub">Manage your courses</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:add_records' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-database"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">Records</p>
+                <p class="card-sub">Add & view records</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:guidelines' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">Guidelines</p>
+                <p class="card-sub">Policies & procedures</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:faculty_contact' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-phone-alt"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">Contact</p>
+                <p class="card-sub">Get in touch</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <a href="{% url 'faculty:faculty_profile' %}" class="nav-card"
+           style="background-image: url('https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&auto=format&fit=crop');">
+            <div class="card-icon"><i class="fas fa-user-circle"></i></div>
+            <div class="card-body-inner">
+                <p class="card-label">My Profile</p>
+                <p class="card-sub">View & edit profile</p>
+            </div>
+        </a>
+    </div>
+
+</div>
+{% endblock %}

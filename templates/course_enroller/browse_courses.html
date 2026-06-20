@@ -1,0 +1,126 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}Browse Courses - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-book-open"></i> Browse Courses
+        </h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-md-3">
+        <div class="sidebar">
+            <h5>Filter Courses</h5>
+            <form method="GET" action="{% url 'course_enroller:browse' %}">
+                <div class="mb-3">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           value="{{ search_term }}" placeholder="Course name...">
+                </div>
+
+                <div class="mb-3">
+                    <label for="price_filter" class="form-label">Price Range</label>
+                    <select class="form-control" id="price_filter" name="price_filter">
+                        <option value="">All Prices</option>
+                        <option value="0-500" {% if request.GET.price_filter == '0-500' %}selected{% endif %}>Below ₹500</option>
+                        <option value="500-1000" {% if request.GET.price_filter == '500-1000' %}selected{% endif %}>₹500 - ₹1000</option>
+                        <option value="1000-5000" {% if request.GET.price_filter == '1000-5000' %}selected{% endif %}>₹1000 - ₹5000</option>
+                        <option value="5000+" {% if request.GET.price_filter == '5000+' %}selected{% endif %}>Above ₹5000</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="sort_by" class="form-label">Sort By</label>
+                    <select class="form-control" id="sort_by" name="sort_by">
+                        <option value="-created_at" {% if request.GET.sort_by == '-created_at' %}selected{% endif %}>Newest</option>
+                        <option value="price" {% if request.GET.sort_by == 'price' %}selected{% endif %}>Price: Low to High</option>
+                        <option value="-price" {% if request.GET.sort_by == '-price' %}selected{% endif %}>Price: High to Low</option>
+                        <option value="title" {% if request.GET.sort_by == 'title' %}selected{% endif %}>Title: A to Z</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary-custom w-100 mb-2">
+                    <i class="fas fa-filter"></i> Apply Filter
+                </button>
+                <a href="{% url 'course_enroller:browse' %}" class="btn btn-secondary-custom w-100">
+                    <i class="fas fa-times"></i> Clear Filters
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Courses Grid -->
+    <div class="col-md-9">
+        {% if courses %}
+            <div class="row">
+                {% for course in courses %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="course-card">
+                            {% if course.thumbnail %}
+                                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" 
+                                     class="card-img-top">
+                            {% else %}
+                                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-book-open fa-3x text-white"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ course.title }}</h5>
+                                <p class="card-text small text-muted">{{ course.description|truncatewords:10 }}</p>
+
+                                <!-- Rating -->
+                                <div class="course-rating">
+                                    {% if course.avg_rating %}
+                                        {% for i in "12345" %}
+                                            {% if i|add:0 <= course.avg_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% elif i|add:-1|add:0 < course.avg_rating %}
+                                                <i class="fas fa-star-half-alt"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <span>({{ course.review_count }})</span>
+                                    {% else %}
+                                        <span class="text-muted">No ratings yet</span>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Price and Stats -->
+                                <p class="course-price mb-2">₹{{ course.price }}</p>
+                                <small class="text-muted">
+                                    <i class="fas fa-users"></i> {{ course.enrolled_count }} enrolled
+                                </small>
+
+                                <!-- Action Button -->
+                                <div class="mt-3">
+                                    {% if course.is_enrolled %}
+                                        <a href="{% url 'course_enroller:watch' course.slug %}" 
+                                           class="btn btn-success btn-sm w-100">
+                                            <i class="fas fa-play"></i> Continue Learning
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'course_enroller:course_detail' course.slug %}" 
+                                           class="btn btn-primary-custom btn-sm w-100">
+                                            <i class="fas fa-info-circle"></i> View Details
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="alert alert-info-custom">
+                <i class="fas fa-search"></i> No courses found matching your criteria.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

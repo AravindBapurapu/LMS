@@ -1,0 +1,73 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}My Courses - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-book-open"></i> My Enrolled Courses
+        </h2>
+    </div>
+</div>
+
+{% if enrollments %}
+    <div class="row">
+        {% for enrollment in enrollments %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="course-card">
+                    {% if enrollment.course.thumbnail %}
+                        <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" 
+                             class="card-img-top">
+                    {% else %}
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center">
+                            <i class="fas fa-book-open fa-3x text-white"></i>
+                        </div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ enrollment.course.title }}</h5>
+                        <p class="card-text small text-muted">{{ enrollment.course.description|truncatewords:10 }}</p>
+
+                        <!-- Progress Bar -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <small><strong>Progress</strong></small>
+                                <small class="text-primary"><strong>{{ enrollment.progress_percentage }}%</strong></small>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" role="progressbar" 
+                                     style="width: {{ enrollment.progress_percentage }}%;" 
+                                     aria-valuenow="{{ enrollment.progress_percentage }}" 
+                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+
+                        <!-- Enrollment Info -->
+                        <small class="text-muted d-block mb-2">
+                            <i class="fas fa-calendar"></i> Enrolled: {{ enrollment.enrolled_at|date:"M d, Y" }}
+                        </small>
+
+                        <!-- Price -->
+                        <p class="course-price mb-3">₹{{ enrollment.course.price }}</p>
+
+                        <!-- Actions -->
+                        <a href="{% url 'course_enroller:watch' enrollment.course.slug %}" 
+                           class="btn btn-primary-custom btn-sm w-100">
+                            <i class="fas fa-play"></i> Continue Learning
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        <h5><i class="fas fa-info-circle"></i> No Enrollments Yet</h5>
+        <p>You haven't enrolled in any courses yet. Browse our courses and start learning today!</p>
+        <a href="{% url 'course_enroller:browse' %}" class="btn btn-primary-custom">
+            <i class="fas fa-search"></i> Browse Courses
+        </a>
+    </div>
+{% endif %}
+{% endblock %}

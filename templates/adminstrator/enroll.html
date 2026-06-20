@@ -1,0 +1,1430 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+  integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+  crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+<style>
+
+  /* body {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    line-height: 1.6;
+    background-color: #000;
+  } */
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-bottom: 30px;
+  }
+
+  .row {
+    flex-wrap: wrap;
+    gap: 40px;
+    width: 100%;
+  }
+
+  div.form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    padding: 0 50px;
+  }
+
+  form {
+    padding: 20px 50px;
+    background: #eeecec;
+    border-radius: 15px;
+    box-shadow: 0 0 12px grey;
+  }
+
+  .table-container {
+    width: 100%;
+    /* margin-top: 30px; */
+    /* padding: 10px 20px; */
+    background: rgb(219, 219, 219);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    color: #222;
+    margin-top: 0;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #333;
+    font-size: 24px;
+  }
+
+  h3 {
+    color: #222;
+    margin-top: 0;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    margin-bottom: 20px;
+    display: block;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    transition: border 0.3s, box-shadow 0.3s;
+    background-color: #fff;
+    color: #333;
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: none;
+    border-color: #666 !important;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  input[type="file"] {
+    padding: 8px 15px;
+    border: 1px dashed #999;
+    background-color: #f9f9f9;
+  }
+
+  input[type="number"] {}
+
+  button {
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  form button[type="button"] {
+    background-color: #333;
+    color: white;
+    min-width: 150px;
+    border-radius: 10px;
+  }
+
+  form button[type="button"]:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: #000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: none;
+  }
+
+  .table-container>button {
+    background-color: #000;
+    color: white;
+    margin: 15px;
+    padding: 8px 15px;
+    font-size: 17px;
+    border-radius: 15px;
+  }
+
+  .table-container>button:hover {
+    background-color: #333;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  th {
+    background-color: #222;
+    color: white;
+    padding: 16px 12px;
+    text-align: left;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    border-bottom: 1px solid #eee;
+    padding: 16px 12px;
+    color: #333;
+  }
+
+  td>.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  tr:hover {
+    background-color: #f9f9f9;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td a {
+    padding: 8px 16px;
+    font-size: 14px;
+    margin-right: 8px;
+    font-weight: 500;
+    min-width: 70px;
+  }
+
+  td a:first-of-type {
+    color: #444;
+  }
+
+  td a:first-of-type:hover {
+    border-radius: 5px;
+    color: #fff;
+  }
+
+  td a:first-of-type:hover .fa-pencil {
+    background-color: #666;
+    border-radius: 5px;
+    color: #fff;
+  }
+
+  td a:first-of-type:hover {
+    background-color: #666;
+    border-radius: 5px;
+    color: #fff;
+  }
+
+  td a:last-of-type {
+    color: #b30000;
+  }
+
+  td a:last-of-type:hover {
+    background-color: #ebe7e7;
+    color: #f9f5f5;
+    border-radius: 5px;
+  }
+
+  .thumbnail-preview {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    display: none;
+  }
+
+  .thumbnail-preview.show {
+    display: block;
+  }
+
+  .table-thumbnail {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+
+  .table-thumbnail.placeholder {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 12px;
+  }
+
+
+  .modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    z-index: 1001;
+  }
+
+  .modal-close-btn:hover {
+    background-color: #f0f0f0;
+    color: #333;
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+    margin-right: 30px;
+    padding-right: 20px;
+    color: #222;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+
+  #videoInputs {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 5px;
+    margin-bottom: 20px;
+  }
+
+  .existing-videos-section {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #eee;
+  }
+
+  .existing-videos-section h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .existing-videos-section h4 .badge {
+    background: #4CAF50;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .existing-video-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #4CAF50;
+  }
+
+  .existing-video-item .video-number {
+    background: #4CAF50;
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+
+  .existing-video-item .video-link {
+    flex: 1;
+    font-size: 14px;
+    color: #333;
+    word-break: break-all;
+    padding: 4px 0;
+  }
+
+  .new-videos-section {
+    margin-top: 20px;
+  }
+
+  .new-videos-section h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .new-videos-section h4 .badge {
+    background: #2196F3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+  }
+
+  .video-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+  }
+
+  .video-input-row input {
+    flex: 1;
+    margin-bottom: 0;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .remove-video-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .remove-video-btn:hover {
+    background: #d32f2f;
+  }
+
+  .add-video-btn {
+    background: #2196F3;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .add-video-btn:hover {
+    background: #1976D2;
+  }
+
+  #videoInputs::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  #videoInputs::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  #videoInputs::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+
+  #videoInputs::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, #ddd, transparent);
+    margin: 20px 0;
+  }
+
+  /* Badges */
+  .link-count-badge {
+    background: #2196F3;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+
+  .saved-badge {
+    color: #4CAF50;
+    margin-left: 5px;
+    font-size: 14px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 3px;
+    height: 12px;
+    background-color: #000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+
+
+/* Add these responsive styles to your existing CSS */
+
+/* Form responsiveness */
+@media (max-width: 768px) {
+  .form {
+    padding: 0 20px !important;
+    width: 100%;
+  }
+  
+  form {
+    padding: 20px 25px !important;
+    max-width: 100%;
+  }
+  
+  .d-flex.gap-3 {
+    flex-direction: column;
+  }
+  
+  .d-flex.gap-3 button {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  input, textarea, button {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .form {
+    padding: 0 10px !important;
+  }
+  
+  form {
+    padding: 15px !important;
+  }
+  
+  h2 {
+    font-size: 20px !important;
+  }
+}
+
+/* Table responsiveness */
+.table-container {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-container table {
+  min-width: 800px;
+}
+
+@media (max-width: 992px) {
+  .table-container table {
+    min-width: 700px;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container table {
+    min-width: 650px;
+  }
+  
+  td .buttons {
+    flex-direction: row !important;
+    gap: 8px;
+  }
+  
+  td a {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .table-container table {
+    min-width: 550px;
+  }
+  
+  td .buttons {
+    gap: 5px;
+  }
+  
+  td a {
+    padding: 5px 8px !important;
+    font-size: 12px !important;
+  }
+  
+  .table-thumbnail {
+    width: 60px !important;
+    height: 40px !important;
+  }
+}
+
+/* Keep your existing button alignment */
+td>.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  align-items: center;
+}</style>
+</head>
+
+
+
+
+
+
+<!-- <div class="container"> -->
+  <div class="row">
+    <div class="form">
+
+      <form id="courseForm" class="form-group w-100 p-4 bg-white rounded shadow-sm" method="post"
+        enctype="multipart/form-data" onsubmit="return false;">
+
+        {% csrf_token %}
+
+        <h2 class="mb-4 fw-semibold">Add Course</h2>
+
+        <!-- Thumbnail -->
+        <div class="mb-4">
+          <label class="form-label fw-medium">Thumbnail</label>
+          <input type="file" class="form-control" name="thumbnail" id="thumbnailInput">
+
+          <img id="thumbnailPreview" class="img-fluid mt-3 rounded border d-none" style="max-height: 180px;"
+            alt="Thumbnail preview">
+        </div>
+
+        <!-- Title -->
+        <div class="mb-3">
+          <label class="form-label fw-medium">Course Title</label>
+          <input id="title" class="form-control" placeholder="Enter course title">
+        </div>
+
+        <!-- Description -->
+        <div class="mb-3">
+          <label class="form-label fw-medium">Description</label>
+          <textarea id="description" name="description" class="form-control" rows="4"
+            placeholder="Enter course description"></textarea>
+        </div>
+
+        <!-- Price -->
+        <div class="mb-3">
+          <label class="form-label fw-medium">Course Price</label>
+          <input id="price" class="form-control" type="number" step="0.01" placeholder="Enter course price">
+        </div>
+
+        <!-- Video Count -->
+        <div class="mb-4">
+          <label class="form-label fw-medium">Number of Videos</label>
+          <input id="videoCount" class="form-control" type="number" min="1" name="videoCount"
+            placeholder="Enter number of videos">
+        </div>
+
+        <!-- Actions -->
+        <div class="d-flex gap-3 flex-wrap">
+          <button type="button" class="btn btn-outline-primary px-4" onclick="openAddVideos()">
+            Add Video Links
+          </button>
+
+          <button type="button" class="btn btn-primary px-4" onclick="saveAndAddRow()">
+            Add to Table
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="table-container mt-5">
+    <!-- <button onclick="saveAll()">Save All</button> -->
+    <table class="table table-bordered">
+      <thead >
+        <tr>
+          <th>Thumbnail</th>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Description</th>
+          <th>Videos</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+
+    <!-- <button onclick="saveAndAddRow()">Save All</button> -->
+  </div>
+
+</div>
+
+<!-- VIDEO ENTRY POPUP -->
+<div class="modal" id="videoModal">
+  <div class="modal-content">
+    <button class="modal-close-btn" onclick="closeVideoModal()">&times;</button>
+    <h3>Manage Video Links & Thumbnails</h3>
+    <div id="videoInputs">
+      <!-- Existing videos will be shown here -->
+      <div id="existingVideosSection" class="existing-videos-section" style="display: none;">
+        <h4>
+          <i class="fas fa-check-circle" style="color: #4CAF50;"></i>
+          Existing Videos
+          <span class="badge" id="existingCountBadge">0</span>
+        </h4>
+        <div id="existingVideosList"></div>
+      </div>
+
+      <!-- New videos section -->
+      <div id="newVideosSection" class="new-videos-section" style="display: none;">
+        <div class="section-divider"></div>
+        <h4>
+          <i class="fas fa-plus-circle" style="color: #2196F3;"></i>
+          Add New Videos
+          <span class="badge" id="newCountBadge">0</span>
+        </h4>
+        <div id="newVideosList"></div>
+        <button type="button" class="add-video-btn" onclick="addNewVideoField()">
+          <i class="fas fa-plus"></i> Add Another Video
+        </button>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button onclick="saveVideos()"
+        style="flex: 1; padding: 12px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Save
+        Videos</button>
+      <button onclick="closeVideoModal()"
+        style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Cancel</button>
+    </div>
+  </div>
+</div>
+<!-- VIEW LINKS POPUP -->
+<div class="modal" id="viewModal">
+  <div class="modal-content">
+    <button class="modal-close-btn" onclick="closeView()">&times;</button>
+    <h3>Video Links</h3>
+    <div id="viewLinks"></div>
+    <button onclick="closeView()"
+      style="margin-top: 20px; width: 100%; padding: 12px; background: #333; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">Close</button>
+  </div>
+<!-- </div> -->
+
+<script>
+  let tempRows = [];
+  let currentVideos = [];
+  let editIndex = null;
+  let isEditing = false;
+
+  // Function to show messages
+  function showMessage(message, type = "success") {
+    const popup = document.createElement("div");
+    popup.innerText = message;
+    popup.style.position = "fixed";
+    popup.style.top = "20px";
+    popup.style.right = "20px";
+    popup.style.background = type === "success" ? "#4CAF50" :
+      type === "error" ? "#f44336" :
+        type === "info" ? "#2196F3" : "#333";
+    popup.style.color = "#fff";
+    popup.style.padding = "12px 20px";
+    popup.style.borderRadius = "8px";
+    popup.style.zIndex = "9999";
+    popup.style.boxShadow = "0 4px 10px rgba(0,0,0,.3)";
+    popup.style.fontWeight = "500";
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+      popup.style.opacity = "0";
+      popup.style.transition = "opacity 0.5s";
+      setTimeout(() => popup.remove(), 500);
+    }, 3000);
+  }
+
+  // Setup thumbnail preview
+  document.addEventListener("DOMContentLoaded", () => {
+    loadExistingRecords();
+
+    // Setup thumbnail preview
+    const thumbnailInput = document.getElementById('thumbnailInput');
+    const thumbnailPreview = document.getElementById('thumbnailPreview');
+
+    if (thumbnailInput) {
+      thumbnailInput.addEventListener('change', function (e) {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            thumbnailPreview.src = e.target.result;
+            thumbnailPreview.classList.add('show');
+          }
+          reader.readAsDataURL(file);
+        } else {
+          thumbnailPreview.classList.remove('show');
+        }
+      });
+    }
+  });
+
+  // Close video modal
+  function closeVideoModal() {
+    document.getElementById("videoModal").style.display = "none";
+    if (isEditing) {
+    }
+  }
+
+  // Open videos popup - IMPROVED VERSION
+  function openAddVideos() {
+    const countInput = document.getElementById("videoCount");
+    let newVideoCount = parseInt(countInput.value) || 0;
+
+    if (newVideoCount < 1) {
+      showMessage("Please enter a valid number of new videos to add", "error");
+      countInput.focus();
+      return;
+    }
+
+    // Clear previous content
+    const existingVideosSection = document.getElementById("existingVideosSection");
+    const existingVideosList = document.getElementById("existingVideosList");
+    const newVideosSection = document.getElementById("newVideosSection");
+    const newVideosList = document.getElementById("newVideosList");
+
+    existingVideosList.innerHTML = "";
+    newVideosList.innerHTML = "";
+
+    // Show/hide sections based on editing mode
+    if (isEditing && currentVideos.length > 0) {
+      // Show existing videos section
+      existingVideosSection.style.display = "block";
+      document.getElementById("existingCountBadge").textContent = currentVideos.length;
+
+      // adding pop up image and video links
+      document.getElementById("newVideosList").innerHTML = "";
+    }
+
+    document.getElementById("videoModal").style.display = "flex";
+
+
+
+    currentVideos.forEach((video, index) => {
+      const row = document.createElement("div");
+      row.className = "video-input-row";
+
+      // ✏️ Editable URL
+      const urlInput = document.createElement("input");
+      urlInput.type = "text";
+      urlInput.value = video.video_url;
+      urlInput.style.flex = "1";
+
+      urlInput.onchange = () => {
+        video.video_url = urlInput.value.trim();
+      };
+
+      // 🖼 Image input
+      const imageInput = document.createElement("input");
+      imageInput.type = "file";
+      imageInput.accept = "image/*";
+
+      const preview = document.createElement("img");
+      preview.style.width = "80px";
+      preview.style.height = "45px";
+      preview.style.objectFit = "cover";
+      preview.style.borderRadius = "4px";
+      preview.style.display = video.image_url ? "block" : "none";
+      if (video.image_url) preview.src = video.image_url;
+
+      imageInput.onchange = () => {
+        const file = imageInput.files[0];
+        if (file) {
+          preview.src = URL.createObjectURL(file);
+          preview.style.display = "block";
+
+          // 🔥 ABSOLUTELY REQUIRED
+          video.image_file = file;
+        }
+      };
+      // 🗑 DELETE BUTTON
+      const deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.innerHTML = "✕";
+      deleteBtn.style.background = "#f44336";
+      deleteBtn.style.color = "#fff";
+      deleteBtn.style.border = "none";
+      deleteBtn.style.borderRadius = "4px";
+      deleteBtn.style.padding = "6px 10px";
+
+      deleteBtn.onclick = () => {
+        if (!confirm("Delete this video?")) return;
+        currentVideos.splice(index, 1);
+        openAddVideos(); // re-render popup
+      };
+
+      row.appendChild(urlInput);
+      row.appendChild(imageInput);
+      row.appendChild(preview);
+      row.appendChild(deleteBtn);
+
+      document.getElementById("existingVideosList").appendChild(row);
+    });
+
+
+
+    // Show new videos section
+    newVideosSection.style.display = "block";
+    document.getElementById("newCountBadge").textContent = newVideoCount;
+
+    // Create input fields for new videos
+    for (let i = 0; i < newVideoCount; i++) {
+      addNewVideoField();
+    }
+
+    // Show the modal
+    document.getElementById("videoModal").style.display = "flex";
+
+    // Focus on first new video input
+    if (newVideosList.firstChild) {
+      const firstInput = newVideosList.firstChild.querySelector('input');
+      if (firstInput) firstInput.focus();
+    }
+  }
+
+  // Add new video input field
+  function addNewVideoField() {
+    const newVideosList = document.getElementById("newVideosList");
+    const inputs = newVideosList.querySelectorAll('.video-input-row');
+    const newIndex = inputs.length + 1;
+
+    const inputRow = document.createElement("div");
+    inputRow.className = "video-input-row";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = `New Video ${newIndex} URL (https://...)`;
+    input.required = true;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove-video-btn";
+    removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+    removeBtn.title = "Remove this video field";
+    removeBtn.onclick = function () {
+      inputRow.remove();
+      updateNewVideoCount();
+    };
+
+    inputRow.appendChild(input);
+    inputRow.appendChild(removeBtn);
+    newVideosList.appendChild(inputRow);
+
+    // Update badge count
+    updateNewVideoCount();
+  }
+
+  // Update new video count badge
+  function updateNewVideoCount() {
+    const newVideosList = document.getElementById("newVideosList");
+    const inputs = newVideosList.querySelectorAll('.video-input-row input');
+    document.getElementById("newCountBadge").textContent = inputs.length;
+
+    // Also update the form input
+    document.getElementById("videoCount").value = inputs.length;
+  }
+
+  function saveVideos() {
+    const rows = document.querySelectorAll("#newVideosList .video-input-row");
+    const newVideos = [];
+    let hasError = false;
+
+    rows.forEach((row, index) => {
+      const urlInput = row.querySelector("input[type='text']");
+      const fileInput = row.querySelector("input[type='file']");
+
+      const url = urlInput.value.trim();
+
+      // ✅ validate ONLY URL input
+      if (!url) {
+        showMessage(`Video ${index + 1}: Please enter a video URL`, "error");
+        urlInput.focus();
+        hasError = true;
+        return;
+      }
+
+      if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        showMessage(
+          `Video ${index + 1}: URL must start with http:// or https://`,
+          "error"
+        );
+        urlInput.focus();
+        hasError = true;
+        return;
+      }
+
+      newVideos.push({
+        id: row.dataset.mediaId || null,   // 🔥 ADD THIS
+        video_url: url,
+        image_file: fileInput?.files[0] || null
+      });
+
+
+    });
+
+    if (hasError) return;
+
+    // 🔁 SAME behavior as before
+    if (isEditing && currentVideos.length > 0) {
+      // currentVideos = [...currentVideos, ...newVideos];
+      currentVideos = [
+        ...currentVideos.filter(v => v.video_url),
+        ...newVideos
+      ];
+    } else {
+      currentVideos = newVideos;
+    }
+
+    document.getElementById("videoModal").style.display = "none";
+    showMessage(`${newVideos.length} video(s) added successfully ✅.
+    `);
+    document.getElementById("videoCount").value = currentVideos.length;
+  }
+
+
+
+  // Edit row function
+  function editRow(index) {
+    const row = tempRows[index];
+
+    // Fill form fields
+    document.getElementById("title").value = row.title;
+    document.getElementById("description").value = row.description;
+    document.getElementById("price").value = row.price;
+
+
+    // Set thumbnail preview if exists
+    if (row.thumbnail_url) {
+      document.getElementById("thumbnailPreview").src = row.thumbnail_url;
+      document.getElementById("thumbnailPreview").classList.add("show");
+    }
+
+    // Set current videos for editing
+    currentVideos = [...row.video_links];
+    editIndex = index;
+    isEditing = true;
+
+    // Reset video count input (user will enter how many new videos to add)
+    document.getElementById("videoCount").value = "";
+
+    // Scroll to form
+    document.querySelector('.form').scrollIntoView({ behavior: 'smooth' });
+
+    // Show edit mode message
+    showMessage(`Editing: ${row.title}. Enter number of new videos to add.`, "info");
+  }
+
+
+  // Reset form
+  function resetForm() {
+    document.getElementById("courseForm").reset();
+    document.getElementById("thumbnailPreview").classList.remove("show");
+    document.getElementById("thumbnailPreview").src = "";
+    currentVideos = [];
+    editIndex = null;
+    isEditing = false;
+  }
+
+
+  function viewRowVideos(index) {
+    const container = document.getElementById("viewLinks");
+    container.innerHTML = "";
+
+    const videos = tempRows[index].video_links;
+
+    videos.forEach((video, i) => {
+      const card = document.createElement("div");
+      card.style.marginBottom = "16px";
+      card.style.padding = "14px";
+      card.style.background = "#f8f9fa";
+      card.style.borderRadius = "8px";
+      card.style.borderLeft = "4px solid #2196F3";
+      card.style.display = "flex";
+      card.style.gap = "15px";
+      card.style.alignItems = "center";
+
+      /* 🖼 IMAGE */
+      const img = document.createElement("img");
+      img.style.width = "140px";
+      img.style.height = "80px";
+      img.style.objectFit = "cover";
+      img.style.borderRadius = "6px";
+      img.style.border = "1px solid #ccc";
+
+      if (video.image_url) {
+        // image from DB
+        img.src = video.image_url;
+      }
+      else if (video.image_file) {
+        // image selected but not yet saved
+        img.src = URL.createObjectURL(video.image_file);
+      }
+      else {
+        img.src = "https://via.placeholder.com/140x80?text=No+Image";
+      }
+
+
+      /* 📄 INFO */
+      const info = document.createElement("div");
+      info.style.flex = "1";
+
+      const title = document.createElement("div");
+      title.textContent = `Video ${i + 1}`;
+      title.style.fontWeight = "600";
+      title.style.marginBottom = "6px";
+
+      const link = document.createElement("a");
+      link.href = video.video_url;
+      link.target = "_blank";
+      link.textContent = video.video_url;
+      link.style.color = "#0066cc";
+      link.style.wordBreak = "break-all";
+      link.style.fontSize = "14px";
+
+      info.appendChild(title);
+      info.appendChild(link);
+
+      card.appendChild(img);
+      card.appendChild(info);
+      container.appendChild(card);
+    });
+
+    document.getElementById("viewModal").style.display = "flex";
+  }
+
+
+  // Delete row with confirmation
+  function deleteRow(index) {
+    const row = tempRows[index];
+
+    if (!confirm(`Are you sure you want to delete "${row.title}"?`)) {
+      return;
+    }
+
+    if (row.db_id) {
+      fetch(`/adminstrator/delete-course/${row.db_id}/`, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": getCSRFToken()
+        },
+        credentials: "same-origin"
+      })
+        .then(res => res.json())
+        .then(data => {
+          showMessage(`Deleted: ${row.title}`, "success");
+        })
+        .catch(error => {
+          showMessage("Error deleting course", "error");
+        });
+    } else {
+      showMessage(`Deleted: ${row.title}`, "success");
+    }
+
+    tempRows.splice(index, 1);
+    renderTable();
+  }
+
+  // save and add table
+  function saveAndAddRow() {
+    const title = document.getElementById("title").value.trim();
+    const description = document.getElementById("description").value.trim();
+    const price = document.getElementById("price").value;
+    const thumbnail = document.querySelector('input[type="file"]').files[0];
+
+    if (!title || !price || currentVideos.length === 0) {
+      showMessage("Fill all fields and add videos", "error");
+      return;
+    }
+
+    // 🔥 STEP 1: Re-index videos (FIXES missing links & images)
+    currentVideos = currentVideos.map((v, index) => ({
+      ...v,
+      client_index: index
+    }));
+
+
+    const formData = new FormData();
+
+    formData.append("courses", JSON.stringify([{
+      id: isEditing ? tempRows[editIndex].db_id : null,
+      title,
+      price,
+      description,
+      video_links: currentVideos.map((v, i) => ({
+        id: v.id || null,
+        video_url: v.video_url,
+        client_index: i
+      }))
+    }]));
+
+
+    if (thumbnail) {
+      formData.append("thumbnail_0", thumbnail);
+    }
+
+    currentVideos.forEach((video, i) => {
+      if (video.image_file) {
+        formData.append(`video_image_0_${i}`, video.image_file);
+      }
+    });
+
+    fetch("/adminstrator/save-courses/", {
+      method: "POST",
+      headers: { "X-CSRFToken": getCSRFToken() },
+      body: formData
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status !== "success") throw data.message;
+
+        const savedRow = {
+          db_id: data.courses[0].id,
+          title,
+          price,
+          description,
+          video_links: [...currentVideos],
+          thumbnail_url:
+            data.courses[0].thumbnail_url ||
+            (isEditing ? tempRows[editIndex].thumbnail_url : null),
+          thumbnail_file: null
+        };
+
+        if (isEditing) {
+          tempRows[editIndex] = savedRow;   // ✅ UPDATE
+        } else {
+          tempRows.push(savedRow);          // ✅ CREATE
+        }
+
+
+        renderTable();
+        resetForm();
+        showMessage("Course saved & added to table ✅");
+      })
+      .catch(err => {
+        console.error(err);
+        showMessage("Save failed", "error");
+      });
+  }
+
+  // Render table
+  function renderTable() {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+
+
+    tempRows.forEach((row, index) => {
+      const tr = document.createElement("tr");
+
+      // Thumbnail cell
+      const thumbnailTd = document.createElement("td");
+      if (row.thumbnail_url) {
+        const img = document.createElement("img");
+        img.src = row.thumbnail_url;
+        img.className = "table-thumbnail";
+        img.alt = row.title;
+        thumbnailTd.appendChild(img);
+      } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "table-thumbnail placeholder";
+        placeholder.textContent = "No image";
+        thumbnailTd.appendChild(placeholder);
+      }
+
+      // Title cell
+      const titleTd = document.createElement("td");
+      titleTd.textContent = row.title;
+      if (row.db_id) {
+        const savedBadge = document.createElement("span");
+        savedBadge.className = "saved-badge";
+        savedBadge.innerHTML = " ✓";
+        savedBadge.title = "Saved to database";
+        titleTd.appendChild(savedBadge);
+      }
+      // adde price
+      const priceTd = document.createElement("td");
+      priceTd.textContent = "₹ " + (row.price ?? "0.00");
+      tr.appendChild(priceTd);
+
+
+      // Description cell
+      const descTd = document.createElement("td");
+      descTd.textContent = row.description.substring(0, 50) + (row.description.length > 50 ? '...' : '');
+
+      // Videos cell
+      const videosTd = document.createElement("td");
+      const viewLink = document.createElement("a");
+      viewLink.href = "#";
+      viewLink.onclick = (e) => {
+        e.preventDefault();
+        viewRowVideos(index);
+      };
+      viewLink.innerHTML = `<i class="fa-solid fa-eye" style="margin-right: 5px;"></i> View`;
+      const countBadge = document.createElement("span");
+      countBadge.className = "link-count-badge";
+      countBadge.textContent = row.video_links.length;
+      viewLink.appendChild(countBadge);
+      viewLink.style.color = "#2196F3";
+      viewLink.style.textDecoration = "none";
+      viewLink.style.display = "inline-flex";
+      viewLink.style.alignItems = "center";
+      videosTd.appendChild(viewLink);
+
+      // Actions cell
+      const actionsTd = document.createElement("td");
+      actionsTd.className = "buttons";
+
+      const editBtn = document.createElement("a");
+      editBtn.innerHTML = '<i class="fa-solid fa-pencil"></i>';
+      editBtn.title = "Edit";
+      editBtn.onclick = () => editRow(index);
+      editBtn.style.marginRight = "15px";
+
+      const deleteBtn = document.createElement("a");
+      deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+      deleteBtn.title = "Delete";
+      deleteBtn.onclick = () => deleteRow(index);
+      deleteBtn.style.color = "#f44336";
+
+      actionsTd.appendChild(editBtn);
+      actionsTd.appendChild(deleteBtn);
+
+      // Append all cells
+      tr.appendChild(thumbnailTd);
+      tr.appendChild(titleTd);
+      tr.appendChild(priceTd);
+      tr.appendChild(descTd);
+      tr.appendChild(videosTd);
+      tr.appendChild(actionsTd);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Load existing records
+  function loadExistingRecords() {
+    fetch("/adminstrator/get-courses/")
+      .then(res => res.json())
+      .then(data => {
+        tempRows = data.map(item => ({
+          db_id: item.id,
+          title: item.title || "",
+          price: item.price || "0.00",
+          description: item.description || "",
+          video_links: Array.isArray(item.video_links)
+            ? item.video_links
+            : [],
+          thumbnail_url: item.thumbnail_url || null,
+          thumbnail_file: null
+        }));
+
+        renderTable();
+
+        if (tempRows.length > 0) {
+          showMessage(`Loaded ${tempRows.length} course(s)`, "info");
+        }
+      })
+      .catch(err => {
+        console.error("LOAD ERROR:", err);
+        showMessage("Error loading courses", "error");
+      });
+  }
+
+  // Get CSRF token
+  function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+  }
+
+  // Close modal when clicking outside
+  window.onclick = function (event) {
+    const videoModal = document.getElementById("videoModal");
+    const viewModal = document.getElementById("viewModal");
+
+    if (event.target === videoModal) {
+      closeVideoModal();
+    }
+    if (event.target === viewModal) {
+      closeView();
+    }
+  };
+
+  function closeView() {
+    document.getElementById("viewModal").style.display = "none";
+  }
+
+  // add videolink and image from the pop up
+  function addNewVideoField(existing = null) {
+    const list = document.getElementById("newVideosList");
+
+    const row = document.createElement("div");
+    row.className = "video-input-row";
+
+    // Video URL input
+    const urlInput = document.createElement("input");
+    urlInput.type = "text";
+    urlInput.placeholder = "Video URL (https://...)";
+    urlInput.value = existing ? existing.video_url : "";
+
+    // Image input
+    const imageInput = document.createElement("input");
+    imageInput.type = "file";
+    imageInput.accept = "image/*";
+
+    // Image preview
+    const preview = document.createElement("img");
+    preview.style.width = "120px";
+    preview.style.height = "70px";
+    preview.style.objectFit = "cover";
+    preview.style.borderRadius = "4px";
+    preview.style.display = existing?.image_url ? "block" : "none";
+    if (existing?.image_url) preview.src = existing.image_url;
+
+    imageInput.onchange = () => {
+      const file = imageInput.files[0];
+      if (file) {
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
+      }
+    };
+
+    row.appendChild(urlInput);
+    row.appendChild(imageInput);
+    row.appendChild(preview);
+    list.appendChild(row);
+  }
+</script>
+{% endblock %}

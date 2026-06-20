@@ -1,0 +1,412 @@
+{% extends "faculty/faculty_base.html" %}
+
+{% block title %}Dashboard - Faculty{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h2 class="mb-4">
+            <i class="fas fa-tachometer-alt"></i> Faculty Dashboard
+        </h2>
+        <p class="text-muted">Welcome back, {{ faculty_profile.user.get_full_name|default:faculty_profile.user.username }}!</p>
+    </div>
+</div>
+
+<!-- Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-book fa-2x" style="color: #e74c3c;"></i>
+            <h4>{{ total_courses }}</h4>
+            <p>Active Courses</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-video fa-2x" style="color: #3498db;"></i>
+            <h4>{{ total_materials }}</h4>
+            <p>Materials Uploaded</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-users fa-2x" style="color: #27ae60;"></i>
+            <h4>0</h4>
+            <p>Total Students</p>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-3">
+        <div class="stat-card">
+            <i class="fas fa-bell fa-2x" style="color: #f39c12;"></i>
+            <h4>{{ recent_notifications.count }}</h4>
+            <p>New Notifications</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <!-- Main Content -->
+    <div class="col-md-8">
+        <h4 class="mb-4">
+            <i class="fas fa-book-open"></i> Your Courses
+        </h4>
+        
+        {% if faculty_profile.courses.all %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Course Name</th>
+                            <th>Students</th>
+                            <th>Materials</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for course in faculty_profile.courses.all|slice:":5" %}
+                            <tr>
+                                <td>{{ course.course.title }}</td>
+                                <td><span class="badge bg-primary">0</span></td>
+                                <td><span class="badge bg-info">0</span></td>
+                                <td>
+                                    <a href="{% url 'faculty:course_detail' course.course.id %}" 
+                                       class="btn btn-sm btn-primary-custom">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No courses assigned yet.
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Quick Actions -->
+        <div class="sidebar mb-4">
+            <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+            <a href="{% url 'faculty:my_courses' %}" class="btn btn-primary-custom w-100 mb-2">
+                <i class="fas fa-book"></i> View All Courses
+            </a>
+            <a href="{% url 'faculty:add_records' %}" class="btn btn-primary-custom w-100 mb-2">
+                <i class="fas fa-file-alt"></i> View Records
+            </a>
+            <a href="{% url 'faculty:faculty_profile' %}" class="btn btn-outline-danger w-100">
+                <i class="fas fa-user"></i> Edit Profile
+            </a>
+        </div>
+
+        <!-- Recent Notifications -->
+        {% if recent_notifications %}
+            <div class="sidebar">
+                <h5><i class="fas fa-bell"></i> Notifications</h5>
+                <ul class="list-unstyled">
+                    {% for notification in recent_notifications %}
+                        <li class="mb-3 pb-3 border-bottom">
+                            <small class="text-muted">{{ notification.created_on|timesince }} ago</small>
+                            <p class="mb-0"><strong>{{ notification.title }}</strong></p>
+                            <small>{{ notification.message }}</small>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'faculty:notifications' %}" class="btn btn-sm btn-outline-danger w-100">
+                    View All
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+                    <p>Enrolled Students</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Courses -->
+        <div class="col-lg-8 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-clock me-2"></i>Recent Courses</h5>
+                    <a href="{% url 'faculty:my_courses' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if faculty_courses %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Students</th>
+                                        <th>Materials</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for fc in faculty_courses|slice:":5" %}
+                                        <tr>
+                                            <td>{{ fc.course.title }}</td>
+                                            <td>
+                                                <span class="badge bg-info">{{ fc.student_count }} Students</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-success">{{ fc.course.materials_count }} Materials</span>
+                                            </td>
+                                            <td>
+                                                {% if fc.is_active %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'faculty:course_detail' fc.course.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="5" class="text-center">No courses assigned yet</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No courses assigned yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications -->
+        <div class="col-lg-4 mb-4">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bell me-2"></i>Notifications</h5>
+                    <a href="{% url 'faculty:notifications' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% if recent_notifications %}
+                        <div class="notification-list">
+                            {% for notification in recent_notifications %}
+                                <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+                                    <div class="notification-icon">
+                                        <i class="fas fa-info-circle"></i>
+                                    </div>
+                                    <div class="notification-content">
+                                        <h6>{{ notification.title }}</h6>
+                                        <p>{{ notification.message|truncatechars:50 }}</p>
+                                        <small>{{ notification.created_on|timesince }} ago</small>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No notifications</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'faculty:my_courses' %}" class="quick-action-btn">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Add Materials</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'faculty:add_records' %}" class="quick-action-btn">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>View Records</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'faculty:guidelines' %}" class="quick-action-btn">
+                                <i class="fas fa-list-alt"></i>
+                                <span>Guidelines</span>
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="{% url 'faculty:faculty_profile' %}" class="quick-action-btn">
+                                <i class="fas fa-user-edit"></i>
+                                <span>Update Profile</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stats-icon i {
+    font-size: 30px;
+    color: white;
+}
+
+.stats-details h3 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--dark-color);
+}
+
+.stats-details p {
+    margin: 0;
+    color: #6c757d;
+}
+
+.dashboard-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-header .btn-outline-primary {
+    color: white;
+    border-color: white;
+}
+
+.card-header .btn-outline-primary:hover {
+    background: white;
+    color: var(--primary-color);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.notification-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+    transition: background 0.3s;
+}
+
+.notification-item:hover {
+    background: var(--light-color);
+}
+
+.notification-item.unread {
+    background: rgba(67, 97, 238, 0.05);
+}
+
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--light-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.notification-icon i {
+    color: var(--primary-color);
+}
+
+.notification-content h6 {
+    margin: 0 0 5px 0;
+    font-weight: 600;
+}
+
+.notification-content p {
+    margin: 0 0 5px 0;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.notification-content small {
+    color: #adb5bd;
+}
+
+.quick-action-btn {
+    background: var(--light-color);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--dark-color);
+    display: block;
+    transition: all 0.3s;
+}
+
+.quick-action-btn:hover {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    transform: translateY(-2px);
+}
+
+.quick-action-btn i {
+    font-size: 30px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.quick-action-btn span {
+    font-weight: 500;
+}
+</style>
+{% endblock %}

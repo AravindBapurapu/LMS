@@ -1,0 +1,32 @@
+{% extends 'student/base.html' %}
+{% block content %}
+  <title>Payment - {{ course.title }}</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- </head> -->
+
+<body class="bg-light">
+
+<div class="container mt-5">
+
+  <div class="card shadow-lg p-4 text-center">
+
+    <h2>{{ course.title }}</h2>
+    <p class="text-muted">Complete your enrollment</p>
+    <p>Order ID: {{ enrollment.order_id }}</p>
+    <p>Razorpay Key: {{ razorpay_key }}</p>
+    <h3 class="text-danger mb-4">₹ {{ course.price }}</h3>
+
+
+<form action="{% url 'adminstrator:fake_payment' course.id %}" method="GET">
+    <button class="btn btn-danger btn-lg">
+        Proceed To Payment
+    </button>
+</form>
+
+  </div>
+
+</div>
+
+<!-- </body>
+</html> -->
+{% endblock %}

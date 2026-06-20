@@ -1,0 +1,232 @@
+{% extends "course_enroller/base.html" %}
+
+{% block title %}{{ course.title }} - Course Enroller{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <a href="{% url 'course_enroller:browse' %}" class="btn btn-secondary-custom btn-sm mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Courses
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Course Overview -->
+    <div class="col-md-8">
+        <!-- Course Header -->
+        <div style="margin-bottom: 30px;">
+            {% if course.thumbnail %}
+                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" 
+                     style="width: 100%; height: 400px; object-fit: cover; border-radius: 12px;">
+            {% else %}
+                <div style="width: 100%; height: 400px; background: #ccc; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-book-open fa-5x text-secondary"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Course Title and Meta -->
+        <h2 class="mb-3">{{ course.title }}</h2>
+        <div class="course-rating mb-3">
+            {% for i in "12345" %}
+                {% if i|add:0 <= avg_rating %}
+                    <i class="fas fa-star"></i>
+                {% elif i|add:-1|add:0 < avg_rating %}
+                    <i class="fas fa-star-half-alt"></i>
+                {% else %}
+                    <i class="far fa-star"></i>
+                {% endif %}
+            {% endfor %}
+            <span class="ms-2">({{ total_reviews }} reviews)</span>
+        </div>
+
+        <!-- Course Stats -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <p><strong><i class="fas fa-users"></i> Students:</strong> {{ enrolled_count }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong><i class="fas fa-video"></i> Videos:</strong> {{ videos.count }}</p>
+            </div>
+            <div class="col-md-4">
+                <p><strong><i class="fas fa-calendar"></i> Created:</strong> {{ course.created_at|date:"M d, Y" }}</p>
+            </div>
+        </div>
+
+        <!-- Course Description -->
+        <div class="mb-4">
+            <h4>About This Course</h4>
+            <p>{{ course.description }}</p>
+        </div>
+
+        <!-- Course Content -->
+        <div class="mb-4">
+            <h4>Course Content</h4>
+            <div class="list-group">
+                {% for video in videos %}
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1"><i class="fas fa-video"></i> Video {{ forloop.counter }}</h6>
+                                <small class="text-muted">Video ID: {{ video.id }}</small>
+                            </div>
+                            {% if is_enrolled %}
+                                <span class="badge bg-success">Unlocked</span>
+                            {% else %}
+                                <span class="badge bg-warning">Locked</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="alert alert-info">No videos available for this course yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="mb-4">
+            <h4>Student Reviews</h4>
+            {% if user.is_authenticated and is_enrolled and not user_review %}
+                <div class="mb-4">
+                    <form method="POST" action="{% url 'course_enroller:add_review' enrollment.id %}" id="reviewForm">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Your Rating</label>
+                            <div>
+                                {% for value, label in review_form.rating.field.choices %}
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="rating" 
+                                               id="rating{{ value }}" value="{{ value }}">
+                                        <label class="form-check-label" for="rating{{ value }}">
+                                            {% for i in "12345" %}
+                                                {% if i|add:0 <= value %}
+                                                    <i class="fas fa-star" style="color: #ffc107;"></i>
+                                                {% else %}
+                                                    <i class="far fa-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="review_text" class="form-label">Your Review</label>
+                            <textarea class="form-control" id="review_text" name="review_text" 
+                                      rows="4" placeholder="Share your experience..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary-custom">Submit Review</button>
+                    </form>
+                </div>
+            {% endif %}
+
+            {% if reviews %}
+                <div class="mt-4">
+                    {% for review in reviews %}
+                        <div class="mb-3 pb-3 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <strong>{{ review.enrollment.user.get_full_name|default:review.enrollment.user.username }}</strong>
+                                <small class="text-muted">{{ review.created_at|timesince }} ago</small>
+                            </div>
+                            <div class="course-rating mb-2">
+                                {% for i in "12345" %}
+                                    {% if i|add:0 <= review.rating %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ review.review_text }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews yet. Be the first to review this course!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <div class="sidebar" style="position: sticky; top: 100px;">
+            <!-- Price and Enrollment -->
+            <div class="mb-4">
+                <h3 class="course-price">₹{{ course.price }}</h3>
+                {% if is_enrolled %}
+                    <div class="alert alert-success-custom mb-3">
+                        <i class="fas fa-check-circle"></i> You are enrolled in this course
+                    </div>
+                    <a href="{% url 'course_enroller:watch' course.slug %}" class="btn btn-success w-100 mb-2">
+                        <i class="fas fa-play"></i> Start Learning
+                    </a>
+                {% else %}
+                    <form method="POST" action="{% url 'course_enroller:enroll' course.slug %}" id="enrollForm" style="margin-bottom: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary-custom w-100">
+                            <i class="fas fa-shopping-cart"></i> Enroll Now
+                        </button>
+                    </form>
+                    <p class="text-muted text-center small">Enroll now to access all course content</p>
+                {% endif %}
+            </div>
+
+            <!-- Course Info -->
+            <div class="mb-4">
+                <h5>Course Details</h5>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <strong><i class="fas fa-level-up-alt"></i> Level:</strong> Beginner to Advanced
+                    </li>
+                    <li class="mb-2">
+                        <strong><i class="fas fa-film"></i> Videos:</strong> {{ videos.count }}
+                    </li>
+                    <li class="mb-2">
+                        <strong><i class="fas fa-users"></i> Students:</strong> {{ enrolled_count }}
+                    </li>
+                    <li class="mb-2">
+                        <strong><i class="fas fa-calendar"></i> Duration:</strong> Self-paced
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Share -->
+            <div>
+                <h5>Share Course</h5>
+                <div class="mb-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary" title="Share on Facebook">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-primary" title="Share on Twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm btn-outline-primary" title="Share on WhatsApp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('enrollForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    fetch(this.action, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            window.location.href = data.redirect;
+        } else {
+            alert(data.message);
+        }
+    });
+});
+</script>
+{% endblock %}

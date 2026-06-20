@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LMS Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap (layout only) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+
+    <style>
+        :root {
+            --green: #4cd964;
+            --sky: #5ac8fa;
+            --blue: #007aff;
+            --cyan: #34aadc;
+            --purple: #5856d6;
+            --pink: #ff2d55;
+            --rose: #eb0066;
+            --dark-rose: #ac0251;
+            --bg-dark: #0F1014;
+            --text: #ffffff;
+            --muted: #b0b3ba;
+        }
+
+        body {
+            margin: 0;
+            background: var(--bg-dark);
+            font-family: Inter, system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* HEADER  */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 55px;
+            width: 100%;
+            background: var(--bg-dark);
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* padding-left: 90px; */
+            z-index: 1200;
+        }
+
+        /* FORCE DROPDOWN ABOVE EVERYTHING */
+        /* FORCE DROPDOWN ABOVE EVERYTHING */
+        .dropdown-menu {
+            position: fixed !important;
+            z-index: 9999 !important;
+        }
+
+
+        .header h3 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        /* HEADER USER DROPDOWN */
+        .header .dropdown {
+            list-style: none;
+            margin: 0;
+            padding: 0 20px 0 0;
+            position: relative;
+        }
+
+        .header .nav-link {
+            color: var(--text) !important;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header .dropdown-menu {
+            background: #1b1c25;
+            border: none;
+            border-radius: 12px;
+        }
+
+        .header .dropdown-item {
+            color: var(--muted);
+        }
+
+        .header .dropdown-item:hover {
+            background: var(--purple);
+            color: white;
+        }
+
+        /* USER MENU */
+        .user-menu {
+            position: relative;
+            margin-right: 20px;
+        }
+
+        .user-trigger {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .user-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            width: 220px;
+            background: #1b1c25;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            display: none;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .user-dropdown.show {
+            display: flex;
+        }
+
+        .dropdown-link {
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #ccc;
+            transition: 0.2s;
+        }
+
+        .dropdown-link:hover {
+            background: #5856d6;
+            color: white;
+        }
+
+
+
+        /*  SIDEBAR  */
+        .sidebar {
+            position: fixed;
+            top: 55px;
+            left: 0;
+            width: 60px;
+            /* width: 240px;  */
+            height: calc(100vh - 55px);
+            background: linear-gradient(to bottom, #0F1014, #151622);
+            transform: translateX(0px);
+            /* overflow: hidden; */
+            transition: width 0.3s ease;
+            z-index: 1100;
+        }
+
+        .sidebar.expanded {
+            width: 240px;
+            /* transform: translateX(0); */
+        }
+
+        /* arrow button */
+        .sidebar-toggle {
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-toggle i {
+            color: var(--sky);
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.expanded .sidebar-toggle i {
+            transform: rotate(180deg);
+        }
+
+        /* SIDEBAR ITEMS */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 0.25s ease;
+        }
+
+        .sidebar-item i {
+            font-size: 18px;
+            min-width: 26px;
+            color: var(--sky);
+        }
+
+        .sidebar-item span {
+            opacity: 0;
+            white-space: nowrap;
+            transition: opacity 0.2s ease;
+        }
+
+        .sidebar.expanded .sidebar-item span {
+            opacity: 1;
+        }
+
+        .sidebar-item:hover {
+            background: linear-gradient(to right,
+                    var(--blue),
+                    var(--purple),
+                    var(--rose));
+        }
+
+        .sidebar-item.active i,
+        .sidebar-item.active span {
+            color: white;
+        }
+
+        /* MOBILE ACTIVE */
+        .mobile-item.active i {
+            color: white;
+        }
+
+        .mobile-item.active span {
+            color: white;
+        }
+
+
+        /*  MAIN CONTENT  */
+        .main-content {
+            position: relative;
+            top: 55px;
+            left: 70px;
+            height: calc(100vh - 95px);
+            width: calc(100% - 70px);
+            padding: 5px 15px;
+            overflow-y: auto;
+            transition: left 0.3s ease, width 0.3s ease;
+            /* z-index: 10; */
+        }
+
+        .sidebar.expanded~.main-content {
+            left: 240px;
+            width: calc(100% - 240px);
+        }
+
+        /* scrollbar */
+        .main-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .main-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom,
+                    var(--sky),
+                    var(--blue),
+                    var(--purple));
+            border-radius: 10px;
+        }
+
+        /*  FOOTER  */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 40px;
+            width: 100%;
+            background: #14151b;
+            color: var(--muted);
+            text-align: center;
+            line-height: 40px;
+            font-size: 16px;
+            z-index: 1200;
+        }
+
+        /* ===============================
+   MOBILE RESPONSIVE (Below 768px)
+=================================*/
+        @media (max-width: 768px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                left: 0;
+                width: 100%;
+                height: calc(100vh - 95px);
+            }
+
+            footer {
+                display: none;
+            }
+
+        }
+
+        /* MOBILE BOTTOM NAV */
+        .mobile-bottom-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+
+            .mobile-bottom-nav {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                background: #14151b;
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                z-index: 1300;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+            }
+
+            .mobile-item {
+                color: var(--muted);
+                text-decoration: none;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 12px;
+            }
+
+            .mobile-item i {
+                font-size: 18px;
+                margin-bottom: 3px;
+                color: var(--sky);
+            }
+
+            .mobile-item:hover {
+                color: var(--text);
+            }
+
+            /* prevent content hiding behind nav */
+            .main-content {
+                padding-bottom: 70px;
+            }
+
+        }
+
+        .mobile-item.active i {
+            color: var(--muted);
+        }
+
+        .mobile-item.active span {
+            color: var(--text);
+        }
+
+        /* .user-name,
+.email-text {
+    max-width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+} */
+
+        .email-text {
+            word-break: break-word;
+            white-space: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <h3>LMS Portal</h3>
+
+        <div class="user-menu">
+            <div class="user-trigger" id="userTrigger">
+                <img src="{{ request.user.profile.avatar.url }}" class="rounded-circle" width="35" height="35"
+                    style="object-fit: cover;">
+            </div>
+
+            <div class="user-dropdown" id="userDropdown">
+                <div class="dropdown-profile px-3 py-3 text-white d-flex align-items-center gap-3">
+
+                    <img src="{{ request.user.profile.avatar.url }}" class="rounded-circle" width="45" height="45"
+                        style="object-fit: cover;">
+
+                    <div>
+                        <div class="fw-bold user-name">
+                            {{ request.user.username }}
+                        </div>
+
+                        <div class="small text-white email-text text-wrap:wrap">
+                            {{ request.user.email }}
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <hr class="m-0">
+
+                <!-- <a href="{}" class="dropdown-link" data-bs-toggle="modal" data-bs-target="#profileModal">
+                    Profile
+                </a> -->
+                <button type="button" class="dropdown-link border-0 bg-transparent text-start w-100"
+                    data-bs-toggle="modal" data-bs-target="#profileModal">
+                    Edit Profile
+                </button>
+
+                <button type="button" class="dropdown-link border-0 bg-transparent text-start w-100"
+                    data-bs-toggle="modal" data-bs-target="#passwordModal">
+                    Change Password
+                </button>
+
+
+                <a href="{% url 'accounts:logout' %}" class="dropdown-link text-danger">
+                    Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+
+        <!-- ARROW TOGGLE -->
+        <!-- <div class="sidebar-toggle" id="sidebarToggle">
+        <i class="fa-solid fa-chevron-right"></i>
+    </div> -->
+
+        <a href="{% url 'sandhya:demo' %}"
+            class="sidebar-item {% if request.resolver_match.url_name == 'demo' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="{% url 'sandhya:allCourses' %}"
+            class="sidebar-item {% if request.resolver_match.url_name == 'allCourses' %}active{% endif %}">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Courses</span>
+        </a>
+
+        <a href="{% url 'sandhya:indi_courses' %}"
+            class="sidebar-item {% if request.resolver_match.url_name == 'indi_courses' %}active{% endif %}">
+            <i class="fa-solid fa-circle-play"></i>
+            <span>Recorded Videos</span>
+        </a>
+
+        <a href="{% url 'sandhya:history' %}"
+            class="sidebar-item {% if request.resolver_match.url_name == 'history' %}active{% endif %}">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History</span>
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="mobile-item sidebar-item mt-auto"> <i
+                class="fa-solid fa-right-from-bracket"></i> <span>Logout</span> </a>
+
+    </div>
+
+    <!-- MAIN CONTENT  -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        © LMS Portal 2026
+    </footer>
+
+    <!-- MOBILE BOTTOM NAV -->
+    <div class="mobile-bottom-nav">
+
+        <a href="{% url 'sandhya:demo' %}"
+            class="mobile-item {% if request.resolver_match.url_name == 'demo' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+        </a>
+
+        <a href="{% url 'sandhya:indi_courses' %}"
+            class="mobile-item {% if request.resolver_match.url_name == 'course_carousel' %}active{% endif %}">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>Courses</span>
+        </a>
+
+        <a href="{% url 'sandhya:allCourses' %}"
+            class="mobile-item {% if request.resolver_match.url_name == 'allCourses' %}active{% endif %}">
+            <i class="fa-solid fa-circle-play"></i>
+            <span>Videos</span>
+        </a>
+
+        <a href="{% url 'sandhya:history' %}"
+            class="mobile-item {% if request.resolver_match.url_name == 'history' %}active{% endif %}">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>History</span>
+        </a>
+
+        <a href="{% url 'accounts:logout' %}" class="mobile-item">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
+
+    </div>
+
+
+    <!-- PROFILE MODAL -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <!-- PROFILE FORM -->
+                    <form method="POST" enctype="multipart/form-data" id="profileForm">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label>Username</label>
+                            <input type="text" name="username" value="{{ request.user.username }}" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email" name="email" value="{{ request.user.email }}" class="form-control"
+                                disabled>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Bio</label>
+                            <textarea name="bio" class="form-control">{{ request.user.profile.bio }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Avatar</label>
+                            <input type="file" name="avatar" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            Update Profile
+                        </button>
+                    </form>
+
+                    <hr>
+
+                    <!-- PASSWORD FORM
+                <form method="POST" id="passwordForm">
+
+                    <div class="mb-3">
+                        <label>Current Password</label>
+                        <input type="password"
+                               name="current_password"
+                               class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>New Password</label>
+                        <input type="password"
+                               name="new_password"
+                               class="form-control">
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Confirm Password</label>
+                        <input type="password"
+                               name="confirm_password"
+                               class="form-control">
+                    </div>
+
+                    <button type="submit"
+                            class="btn btn-danger w-100">
+                        Change Password
+                    </button>
+
+                </form> -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- PASSWORD MODAL -->
+    <div class="modal fade" id="passwordModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <form id="passwordForm">
+
+                        <div class="mb-3">
+                            <label>Current Password</label>
+                            <input type="password" name="current_password" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>New Password</label>
+                            <input type="password" name="new_password" class="form-control">
+                        </div>
+
+                        <div class="mb-3">
+                            <label>Confirm Password</label>
+                            <input type="password" name="confirm_password" class="form-control">
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100">
+                            Update Password
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- SIMPLE JS (YOUR STYLE) -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // SIDEBAR SAFE HANDLING
+            const sidebar = document.getElementById("sidebar");
+            const toggle = document.getElementById("sidebarToggle");
+
+            if (sidebar) {
+                sidebar.addEventListener("mouseenter", () => {
+                    sidebar.classList.add("expanded");
+                });
+
+                sidebar.addEventListener("mouseleave", () => {
+                    sidebar.classList.remove("expanded");
+                });
+            }
+
+            if (toggle && sidebar) {
+                toggle.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    sidebar.classList.toggle("expanded");
+                });
+            }
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const csrftoken = getCookie('csrftoken');
+
+            const profileForm = document.getElementById("profileForm");
+
+            if (profileForm) {
+                profileForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    let formData = new FormData(this);
+
+                    fetch("{% url 'accounts:update_profile' %}", {
+                        method: "POST",
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            // if (data.success) {
+
+                            //     // Update username
+                            //     const newUsername =
+                            //         document.querySelector("input[name='username']").value;
+
+                            //     document.querySelector(".user-name").innerText = newUsername;
+
+                            // 🔥 FORCE IMAGE REFRESH (NO CACHE)
+                            // const headerImg = document.querySelector("#userTrigger img");
+                            // const dropdownImg = document.querySelector(".dropdown-profile img");
+
+                            // const baseSrc = headerImg.src.split("?")[0];
+                            // const timestamp = new Date().getTime();
+
+                            // headerImg.src = baseSrc + "?t=" + timestamp;
+                            // dropdownImg.src = baseSrc + "?t=" + timestamp;
+
+                            //     bootstrap.Modal.getInstance(
+                            //         document.getElementById("profileModal")
+                            //     ).hide();
+
+                            //     alert("Profile Updated Successfully!");
+                            // }
+                            if (data.success) {
+
+                                const newUsername =
+                                    document.querySelector("input[name='username']").value;
+
+                                document.querySelector(".user-name").innerText = newUsername;
+
+                                const headerImg = document.querySelector("#userTrigger img");
+                                const dropdownImg = document.querySelector(".dropdown-profile img");
+
+                                const newImageUrl = data.avatar_url + "?t=" + new Date().getTime();
+
+                                headerImg.src = newImageUrl;
+                                dropdownImg.src = newImageUrl;
+
+                                const profileModalEl = document.getElementById("profileModal");
+                                const modalInstance = bootstrap.Modal.getOrCreateInstance(profileModalEl);
+                                modalInstance.hide();
+
+                                // 🔥 FORCE CLEANUP (IMPORTANT)
+                                document.body.classList.remove('modal-open');
+                                document.body.style.overflow = '';
+                                document.body.style.paddingRight = '';
+
+                                const backdrop = document.querySelector('.modal-backdrop');
+                                if (backdrop) {
+                                    backdrop.remove();
+                                }
+
+                                alert("Profile Updated Successfully!");
+                            }
+
+
+                        });
+
+                });
+            }
+
+            // const userTrigger = document.getElementById("userTrigger");
+            // const userDropdown = document.getElementById("userDropdown");
+
+            // if (userTrigger && userDropdown) {
+
+            //     userTrigger.addEventListener("click", function (e) {
+            //         e.stopPropagation();
+            //         userDropdown.classList.toggle("show");
+            //     });
+
+            //     document.addEventListener("click", function () {
+            //         userDropdown.classList.remove("show");
+            //     });
+
+            //     userDropdown.addEventListener("click", function (e) {
+            //         e.stopPropagation();
+            //     });
+            // }
+            const userTrigger = document.getElementById("userTrigger");
+            const userDropdown = document.getElementById("userDropdown");
+
+            if (userTrigger && userDropdown) {
+
+                userTrigger.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    userDropdown.classList.toggle("show");
+                });
+
+                // Close only when clicking outside
+                document.addEventListener("click", function (e) {
+                    if (!userDropdown.contains(e.target) && !userTrigger.contains(e.target)) {
+                        userDropdown.classList.remove("show");
+                    }
+                });
+
+            }
+
+            // PASSWORD UPDATE
+            const passwordForm = document.getElementById("passwordForm");
+
+            if (passwordForm) {
+                passwordForm.addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    let formData = new FormData(this);
+
+                    fetch("{% url 'accounts:change_password' %}", {
+                        method: "POST",
+                        headers: {
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+
+                            if (data.success) {
+                                alert("Password Changed Successfully!");
+
+                                bootstrap.Modal.getInstance(
+                                    document.getElementById("passwordModal")
+                                ).hide();
+
+                                passwordForm.reset();
+                            } else {
+                                alert(data.error);
+                            }
+
+                        });
+                });
+            }
+
+
+        });
+
+
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .dashboard-card {
+        height: 220px;
+        border-radius: 16px;
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .dashboard-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom,
+                rgba(0, 0, 0, 0.25),
+                rgba(0, 0, 0, 0.65));
+        z-index: 1;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .dashboard-card h4 {
+        position: absolute;
+        z-index: 2;
+        color: #fff;
+        font-weight: 700;
+        text-align: center;
+        width: 100%;
+        top: 50%;
+        transform: translateY(-50%);
+        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        letter-spacing: 0.5px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row g-4 mb-5">
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{% url 'adminstrator:manage_course' %}" style="text-decoration: none;">
+                <div class="dashboard-card"
+                    style="background-image: url('https://images.unsplash.com/photo-1542626991-cbc4e32524cc?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');">
+                    <h4>Manage Courses</h4>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{% url 'adminstrator:manage_student' %}" style="text-decoration: none;">
+            <div class="dashboard-card"
+                style="background-image: url('https://images.unsplash.com/photo-1524178232363-1fb2b075b655');">
+                <h4>Manage Students</h4>
+            </div>
+            </a>
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{% url 'adminstrator:manage_faculty' %}" style="text-decoration: none;">
+
+                <div class="dashboard-card"
+                    style="background-image: url('https://images.unsplash.com/photo-1503676260728-1c00da094a0b');">
+                    <h4>Manage Faculty</h4>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="col-12 col-sm-6 col-lg-3">
+            <a href="{% url 'adminstrator:report_analysis' %}" style="text-decoration: none;">
+
+                <div class="dashboard-card"
+                    style="background-image: url('https://images.unsplash.com/photo-1556761175-5973dc0f32e7');">
+                    <h4>Reports & Analytics</h4>
+                </div>
+            </a>
+
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

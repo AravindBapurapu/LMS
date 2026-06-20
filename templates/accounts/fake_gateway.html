@@ -1,0 +1,69 @@
+{% extends 'student/base.html' %}
+{% block content %}
+  <title>Fake Razorpay</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<!-- <body class="bg-dark text-white"> -->
+
+<div class="container mt-5">
+
+  <div class="card p-4 bg-light text-dark shadow text-center">
+
+    <h2>Razorpay Checkout</h2>
+
+    <p><strong>Order ID:</strong> {{ enrollment.order_id }}</p>
+    <p><strong>Amount:</strong> ₹ {{ course.price }}</p>
+
+<form method="POST" action="{% url 'adminstrator:process_payment' course.id %}">
+    {% csrf_token %}
+
+    <input type="text" name="card_holder" class="form-control mb-3"
+           placeholder="Card Holder Name" required>
+
+    <input type="text" name="card_number" class="form-control mb-3"
+           placeholder="Card Number (16 digits)" required>
+
+    <input type="text" name="expiry" class="form-control mb-3"
+           placeholder="MM/YY" required>
+
+    <input type="text" name="cvv" class="form-control mb-3"
+           placeholder="CVV" required>
+
+    <button class="btn btn-success btn-lg">
+        Pay ₹ {{ course.price }}
+    </button>
+</form>
+
+  </div>
+
+</div>
+
+<script>
+function completePayment() {
+
+    const paymentId = "pay_" + Math.random().toString(36).substring(2, 12);
+    const orderId = "{{ enrollment.order_id }}";
+    const secret = "fake_secret_987654";
+
+    const rawString = orderId + "|" + paymentId + secret;
+
+    const signature = sha256(rawString);
+
+    document.getElementById("payment_id").value = paymentId;
+    document.getElementById("signature").value = signature;
+
+    document.getElementById("paymentForm").submit();
+}
+
+function sha256(str) {
+    return CryptoJS.SHA256(str).toString();
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
+<!-- </body>
+</html> -->
+
+{% endblock  %}

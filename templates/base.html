@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'CSS/styles.css' %}">
+
+    <title>LMS · Fixed Sidebar Behavior</title>
+
+    <style>
+        /* ----- RESET / BASE ----- */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        /* ----- HEADER (fixed) ----- */
+        .header {
+            height: 60px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #212529;
+            z-index: 1200;
+            display: flex;
+            align-items: center;
+        }
+        .header .brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin-left: 4rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        /* ----- TOGGLE BUTTON (always visible) ----- */
+        .toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1300;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.2);
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .toggle:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .toggle i {
+            font-size: 1.6rem;
+            color: white;
+        }
+
+        /* ----- SIDEBAR (modern, dark) ----- */
+        .sidebar {
+            width: 260px;
+            position: fixed;
+            top: 60px;
+            left: -260px;  /* hidden by default */
+            height: calc(100vh - 60px);
+            background: #1e2329;
+            transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1250;
+            overflow-y: auto;
+            box-shadow: 2px 0 12px rgba(0,0,0,0.15);
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Desktop: sidebar starts open */
+        @media (min-width: 992px) {
+            .sidebar {
+                left: 0; /* open by default on desktop */
+            }
+        }
+
+        /* Tablet: closed by default */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .sidebar {
+                left: -260px;
+            }
+        }
+
+        /* Mobile: closed by default */
+        @media (max-width: 767px) {
+            .sidebar {
+                left: -260px;
+            }
+        }
+
+        /* sidebar menu items */
+        .sidebar .list-group {
+            padding: 1rem 0;
+        }
+        .sidebar .list-group-item {
+            background: transparent;
+            color: rgba(255,255,255,0.85);
+            border: none;
+            border-left: 4px solid transparent;
+            padding: 14px 24px;
+            margin: 2px 0;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar .list-group-item i {
+            width: 28px;
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.7);
+            transition: all 0.2s;
+        }
+        .sidebar .list-group-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-left-color: #0d6efd;
+            color: white;
+        }
+        .sidebar .list-group-item:hover i {
+            color: #0d6efd;
+            transform: scale(1.05);
+        }
+        .active-menu {
+            background: rgba(13, 110, 253, 0.2) !important;
+            border-left: 4px solid #0d6efd !important;
+            font-weight: 500;
+            color: white !important;
+        }
+
+        /* subtle shine effect */
+        .sidebar .list-group-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+            transition: left 0.5s;
+            pointer-events: none;
+        }
+        .sidebar .list-group-item:hover::before {
+            left: 100%;
+        }
+
+        /* ----- MAIN CONTENT (with margin transition) ----- */
+        .main-content {
+            margin-top: 60px;
+            padding: 25px 20px;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+            min-height: calc(100vh - 105px);
+            background-color: #f8f9fa;
+            width: 100%;
+        }
+
+        /* Desktop: content shifted when sidebar is open */
+        @media (min-width: 992px) {
+            .main-content {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+        }
+
+        /* Tablet: shift only when sidebar active */
+        @media (min-width: 768px) and (max-width: 991px) {
+            .main-content.shift {
+                margin-left: 260px;
+                width: calc(100% - 260px);
+            }
+        }
+
+        /* Mobile: no shift ever */
+        @media (max-width: 767px) {
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
+        /* Cards layout */
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            justify-content: flex-start;
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .cards .card {
+            height: 190px;
+            width: 280px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            background-position: center;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.3s ease;
+            position: relative;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* background images */
+        .cards .card.manage-course { background-image: url('https://www.impactfactory.com/wp-content/uploads/2024/04/what-types-of-training-do-managers-need.webp'); }
+        .cards .card.manage-student { background-image: url('https://education.adaptit.tech/wp-content/uploads/2020/08/How-do-student-management-systems-address-the-biggest-challenges-of-higher-education-institutions_-1.png'); }
+        .cards .card.manage-faculty { background-image: url('https://img.freepik.com/free-photo/report-session_1098-15776.jpg?semt=ais_hybrid&w=740&q=80'); }
+        .cards .card.total-budget { background-image: url('https://www.shutterstock.com/image-photo/wooden-blocks-word-budget-on-600nw-2488064205.jpg'); }
+        .cards .card.Advertisement { background-image: url('https://timesinternet.in/blog/wp-content/uploads/2024/11/Advertisment-ideas.jpg'); }
+
+        /* overlay */
+        .cards .card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            transition: background 0.2s;
+        }
+        .cards .card:hover::before {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .cards .card h3 {
+            color: #fff;
+            z-index: 1;
+            font-size: 1.4rem;
+            font-weight: 600;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            margin: 0 10px;
+            text-align: center;
+        }
+
+        .cards .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.2);
+        }
+
+        /* ----- FOOTER (fixed) ----- */
+        footer {
+            height: 45px;
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            background-color: #212529;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1150;
+            font-size: 0.95rem;
+        }
+
+        /* ----- OVERLAY (mobile/tablet only) ----- */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1220;
+            display: none;
+            backdrop-filter: blur(2px);
+        }
+        .overlay.active {
+            display: block;
+        }
+
+        /* small card adjustment on narrow screens */
+        @media (max-width: 480px) {
+            .cards { justify-content: center; }
+            .cards .card { width: 100%; max-width: 320px; }
+        }
+
+        .toggle {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Class to handle desktop closed state */
+        .sidebar.desktop-closed {
+            left: -260px !important;
+        }
+        
+        .main-content.desktop-expanded {
+            margin-left: 260px !important;
+            width: calc(100% - 260px) !important;
+        }
+        
+        .main-content.desktop-collapsed {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- overlay (for mobile/tablet) -->
+    <div class="overlay"></div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="brand">LMS Portal</div>
+    </header>
+
+    <!-- TOGGLE ICON -->
+    <div class="toggle" aria-label="Menu toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar bg-dark" id="mainSidebar">
+        <div class="list-group">
+            <a href="{% url 'adminstrator:dashboard' %}" class="list-group-item {% if request.resolver_match.url_name == 'dashboard' %}active-menu{% endif %}">
+                <i class="fa-solid fa-chart-bar me-3"></i> Dashboard
+            </a>
+            <a href="{% url 'adminstrator:enroll' %}" class="list-group-item {% if request.resolver_match.url_name == 'enroll' %}active-menu{% endif %}">
+                <i class="fa-solid fa-graduation-cap me-3"></i> Courses
+            </a>
+            <a href="{% url 'adminstrator:manage_course' %}" class="list-group-item {% if request.resolver_match.url_name == 'manage_course' %}active-menu{% endif %}">
+                <i class="fas fa-video me-3"></i>  Manage Course
+            </a>
+            <a href="{% url 'adminstrator:manage_student' %}" class="list-group-item {% if request.resolver_match.url_name == 'manage_student' %}active-menu{% endif %}">
+                <i class="fa-solid fa-book-open-reader me-3"></i> Manage Student
+            </a>
+            <a href="{% url 'adminstrator:manage_faculty' %}" class="list-group-item {% if request.resolver_match.url_name == 'manage_faculty' %}active-menu{% endif %}">
+                <i class="fa-solid fa-user-tie me-3"></i> Manage Faculty
+            </a>
+            <a href="{% url 'adminstrator:report_analysis' %}" class="list-group-item {% if request.resolver_match.url_name == 'report_analysis' %}active-menu{% endif %}">
+                <i class="fas fa-history me-3"></i> Report Analysis
+            </a>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content" id="mainContent">
+        {% block content %}
+        <!-- Example dashboard cards -->
+        <div class="cards">
+            <a href="#" class="card-link"><div class="card manage-course"><h3>Manage Course</h3></div></a>
+            <a href="#" class="card-link"><div class="card manage-student"><h3>Manage Student</h3></div></a>
+            <a href="#" class="card-link"><div class="card manage-faculty"><h3>Manage Faculty</h3></div></a>
+            <a href="#" class="card-link"><div class="card total-budget"><h3>Total Budget</h3></div></a>
+            <a href="#" class="card-link"><div class="card Advertisement"><h3>Advertisements</h3></div></a>
+        </div>
+        {% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+        © LMS Portal 2026
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- SIDEBAR TOGGLE SCRIPT - Fixed behavior with proper desktop closing -->
+    <script>
+        (function() {
+            const toggleBtn = document.querySelector('.toggle');
+            const icon = toggleBtn.querySelector('i');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const overlay = document.querySelector('.overlay');
+
+            // Determine device type based on width
+            function isMobile() {
+                return window.innerWidth < 768;
+            }
+
+            function isTablet() {
+                return window.innerWidth >= 768 && window.innerWidth < 992;
+            }
+
+            function isDesktop() {
+                return window.innerWidth >= 992;
+            }
+
+            // Track sidebar state (open/closed)
+            let sidebarOpen = true; // Desktop starts open
+
+            // Function to update UI based on sidebar state and device
+            function updateSidebarUI() {
+                if (isDesktop()) {
+                    // Desktop: use direct style manipulation for reliability
+                    if (sidebarOpen) {
+                        // Sidebar open
+                        sidebar.classList.add('active');
+                        sidebar.classList.remove('desktop-closed');
+                        mainContent.classList.remove('desktop-collapsed');
+                        mainContent.classList.add('desktop-expanded');
+                        mainContent.style.marginLeft = '260px';
+                        mainContent.style.width = 'calc(100% - 260px)';
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    } else {
+                        // Sidebar closed
+                        sidebar.classList.remove('active');
+                        sidebar.classList.add('desktop-closed');
+                        mainContent.classList.remove('desktop-expanded');
+                        mainContent.classList.add('desktop-collapsed');
+                        mainContent.style.marginLeft = '0';
+                        mainContent.style.width = '100%';
+                        icon.classList.remove('fa-xmark');
+                        icon.classList.add('fa-bars');
+                    }
+                    overlay.classList.remove('active');
+                } 
+                else if (isTablet()) {
+                    // Tablet: use active class for sidebar, shift for content
+                    if (sidebarOpen) {
+                        sidebar.classList.add('active');
+                        mainContent.classList.add('shift');
+                        overlay.classList.add('active');
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    } else {
+                        sidebar.classList.remove('active');
+                        mainContent.classList.remove('shift');
+                        overlay.classList.remove('active');
+                        icon.classList.remove('fa-xmark');
+                        icon.classList.add('fa-bars');
+                    }
+                    // Reset desktop-specific classes
+                    sidebar.classList.remove('desktop-closed');
+                    mainContent.classList.remove('desktop-expanded', 'desktop-collapsed');
+                    mainContent.style.marginLeft = '';
+                    mainContent.style.width = '';
+                } 
+                else { // mobile
+                    if (sidebarOpen) {
+                        sidebar.classList.add('active');
+                        overlay.classList.add('active');
+                        icon.classList.remove('fa-bars');
+                        icon.classList.add('fa-xmark');
+                    } else {
+                        sidebar.classList.remove('active');
+                        overlay.classList.remove('active');
+                        icon.classList.remove('fa-xmark');
+                        icon.classList.add('fa-bars');
+                    }
+                    // Remove all positioning classes
+                    sidebar.classList.remove('desktop-closed');
+                    mainContent.classList.remove('shift', 'desktop-expanded', 'desktop-collapsed');
+                    mainContent.style.marginLeft = '';
+                    mainContent.style.width = '';
+                }
+            }
+
+            // Initialize sidebar state based on device
+            function initializeSidebar() {
+                if (isDesktop()) {
+                    // Desktop: sidebar open by default
+                    sidebarOpen = true;
+                } else {
+                    // Tablet & Mobile: sidebar closed by default
+                    sidebarOpen = false;
+                }
+                updateSidebarUI();
+            }
+
+            // Toggle click handler
+            toggleBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                // Toggle the state
+                sidebarOpen = !sidebarOpen;
+                updateSidebarUI();
+            });
+
+            // Overlay click: close sidebar (for tablet/mobile)
+            overlay.addEventListener('click', function() {
+                if (!isDesktop()) {
+                    sidebarOpen = false;
+                    updateSidebarUI();
+                }
+            });
+
+            // Click on main content on mobile/tablet to close sidebar
+            mainContent.addEventListener('click', function() {
+                if (!isDesktop() && sidebarOpen) {
+                    sidebarOpen = false;
+                    updateSidebarUI();
+                }
+            });
+
+            // Handle window resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(function() {
+                    // Store current state before resize
+                    const wasOpen = sidebarOpen;
+                    const wasDesktop = isDesktop();
+                    
+                    // Re-initialize based on new width
+                    if (isDesktop()) {
+                        // Switching to desktop - should be open by default
+                        sidebarOpen = true;
+                    } else {
+                        // Switching to tablet/mobile - should be closed by default
+                        sidebarOpen = false;
+                    }
+                    updateSidebarUI();
+                }, 150);
+            });
+
+            // Initialize on page load
+            initializeSidebar();
+
+            // Handle escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && sidebarOpen && !isDesktop()) {
+                    sidebarOpen = false;
+                    updateSidebarUI();
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html>

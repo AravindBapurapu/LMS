@@ -1,0 +1,479 @@
+{% extends 'faculty/base.html' %}
+{% load static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        {% if profile and profile.avatar %}
+                            <img src="{{ profile.avatar.url }}" alt="Profile">
+                        {% else %}
+                            <img src="/media/avatars/default.png" alt="Default">
+                        {% endif %}
+                    </div>
+                    <h3 class="profile-name">{{ request.user.get_full_name|default:request.user.username }}</h3>
+                    <p class="profile-role">
+                        {% if faculty_profile.is_approved %}
+                            <span class="badge bg-success">Approved Faculty</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pending Approval</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="profile-info">
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>{{ request.user.email }}</span>
+                    </div>
+                    
+                    {% if faculty_profile.phone %}
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <span>{{ faculty_profile.phone }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if faculty_profile.qualification %}
+                        <div class="info-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>{{ faculty_profile.qualification }}</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if faculty_profile.experience %}
+                        <div class="info-item">
+                            <i class="fas fa-briefcase"></i>
+                            <span>{{ faculty_profile.experience }} years experience</span>
+                        </div>
+                    {% endif %}
+                    
+                    {% if faculty_profile.expertise %}
+                        <div class="info-item">
+                            <i class="fas fa-star"></i>
+                            <span>{{ faculty_profile.expertise }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="btn btn-primary w-100" onclick="openProfileSettings()">
+                        <i class="fas fa-edit me-2"></i>Edit Profile
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Card -->
+            <div class="stats-card mt-4">
+                <h5 class="mb-3">Quick Stats</h5>
+                <div class="stat-item">
+                    <span>Total Courses</span>
+                    <strong>{{ total_courses|default:"0" }}</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Total Materials</span>
+                    <strong>{{ total_materials|default:"0" }}</strong>
+                </div>
+                <div class="stat-item">
+                    <span>Total Students</span>
+                    <strong>{{ total_students|default:"0" }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 mb-4">
+            <!-- Contact Information -->
+            <div class="profile-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-address-book me-2"></i>Contact Information</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editContact()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if contact_info %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted">Email</label>
+                                <p class="fw-bold">{{ contact_info.email }}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="text-muted">Phone</label>
+                                <p class="fw-bold">{{ contact_info.phone }}</p>
+                            </div>
+                            {% if contact_info.alternative_phone %}
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted">Alternative Phone</label>
+                                    <p class="fw-bold">{{ contact_info.alternative_phone }}</p>
+                                </div>
+                            {% endif %}
+                            {% if contact_info.office_address %}
+                                <div class="col-12 mb-3">
+                                    <label class="text-muted">Office Address</label>
+                                    <p class="fw-bold">{{ contact_info.office_address }}</p>
+                                </div>
+                            {% endif %}
+                            {% if contact_info.available_from and contact_info.available_to %}
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted">Available From</label>
+                                    <p class="fw-bold">{{ contact_info.available_from|time:"H:i" }}</p>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="text-muted">Available To</label>
+                                    <p class="fw-bold">{{ contact_info.available_to|time:"H:i" }}</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No contact information added</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Bio Section -->
+            <div class="profile-card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-user me-2"></i>Biography</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editBio()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if faculty_profile.bio %}
+                        <p class="bio-text">{{ faculty_profile.bio|linebreaks }}</p>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No biography added yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Academic Qualifications -->
+            <div class="profile-card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Academic Qualifications</h5>
+                    <button class="btn btn-sm btn-outline-primary" onclick="editQualifications()">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if qualifications %}
+                        <div class="qualifications-list">
+                            {% for qual in qualifications %}
+                            <div class="qualification-item mb-3">
+                                <h6 class="mb-1">{{ qual.degree }} in {{ qual.field_of_study }}</h6>
+                                <p class="mb-1 text-muted">{{ qual.institution }} | {{ qual.year_completed }}</p>
+                                {% if qual.description %}
+                                    <p class="mb-0 small">{{ qual.description }}</p>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No qualifications added</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="profile-card mt-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <div class="activity-list">
+                            {% for activity in recent_activities %}
+                            <div class="activity-item d-flex align-items-start mb-3">
+                                <div class="activity-icon me-3">
+                                    <i class="fas fa-{{ activity.icon }}"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="mb-1">{{ activity.description }}</p>
+                                    <small class="text-muted">{{ activity.timestamp|timesince }} ago</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center py-4">No recent activity</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Settings Modal -->
+<div class="modal fade" id="profileSettingsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Profile Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="profileSettingsForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control" name="full_name" value="{{ request.user.get_full_name }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ request.user.email }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="tel" class="form-control" name="phone" value="{{ faculty_profile.phone }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Qualification</label>
+                            <input type="text" class="form-control" name="qualification" value="{{ faculty_profile.qualification }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Experience (years)</label>
+                            <input type="number" class="form-control" name="experience" value="{{ faculty_profile.experience }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expertise</label>
+                            <input type="text" class="form-control" name="expertise" value="{{ faculty_profile.expertise }}">
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" name="bio" rows="4">{{ faculty_profile.bio }}</textarea>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Profile Avatar</label>
+                            <input type="file" class="form-control" name="avatar" accept="image/*">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveProfileSettings()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profile-name {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.profile-role .badge {
+    padding: 8px 15px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.profile-info {
+    padding: 20px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-item i {
+    width: 30px;
+    color: #667eea;
+    font-size: 1.1rem;
+}
+
+.info-item span {
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.profile-actions {
+    padding: 0 20px 20px;
+}
+
+.stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-item span {
+    color: #666;
+}
+
+.stat-item strong {
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.card-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.bio-text {
+    line-height: 1.8;
+    color: #555;
+    margin: 0;
+}
+
+.qualification-item {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.qualification-item:last-child {
+    margin-bottom: 0 !important;
+}
+
+.activity-item {
+    padding: 10px;
+    border-radius: 10px;
+    transition: background 0.3s;
+}
+
+.activity-item:hover {
+    background: #f8f9fa;
+}
+
+.activity-icon {
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.activity-content {
+    flex: 1;
+}
+
+.activity-content p {
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.btn-outline-primary {
+    border-color: #667eea;
+    color: #667eea;
+}
+
+.btn-outline-primary:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: white;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+</style>
+
+<script>
+function openProfileSettings() {
+    var modal = new bootstrap.Modal(document.getElementById('profileSettingsModal'));
+    modal.show();
+}
+
+function editContact() {
+    // Redirect to contact edit page or open modal
+    window.location.href = "{% url 'faculty:edit_contact' %}";
+}
+
+function editBio() {
+    // Redirect to bio edit page or open modal
+    window.location.href = "{% url 'faculty:edit_bio' %}";
+}
+
+function editQualifications() {
+    // Redirect to qualifications edit page or open modal
+    window.location.href = "{% url 'faculty:edit_qualifications' %}";
+}
+
+function saveProfileSettings() {
+    // Submit the form via AJAX or regular form submission
+    document.getElementById('profileSettingsForm').submit();
+}
+</script>
+{% endblock %}

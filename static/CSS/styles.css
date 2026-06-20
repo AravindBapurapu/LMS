@@ -1,0 +1,149 @@
+/* html, body{
+    height: 100%;
+    position: relative;
+}
+
+.header {
+  height: 50px;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1200;
+} */
+
+/* .sidebar {
+  width: 250px;
+  height: calc(100vh - 50px - 45px);
+  position: fixed;
+  top: 50px;
+  left: -250px;
+  transition: left 0.3s ease;
+  z-index: 1100;
+  overflow-y: auto; 
+} */
+
+/* .sidebar.active {
+  left: 0;
+}
+
+.sidebar .icon .fa-solid{
+    position: absolute;
+    top: -10px;
+    left: 15px;
+    z-index: 2000;
+}
+
+.toggle i{
+    cursor: pointer;
+}
+
+.toggle {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1200;
+  cursor: pointer;
+}
+
+.main-content {
+    height: 100vh;
+  width: 100%;
+  padding: 70px 30px 70px 30px;
+  transition: margin-left 0.3s ease, width 0.3s ease;
+  overflow: scroll;
+} */
+
+/* .main-content {
+  padding: 70px 30px 70px 30px;
+  overflow-y: auto;
+} */
+
+
+/* .main-content.shift {
+  margin-left: 250px;
+  width: calc(100% - 250px); 
+}
+
+.main-content.shift .cards {
+  justify-content: center;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  transition: justify-content 0.3s ease;
+}
+
+.card-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+
+.cards .card {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+}
+
+.cards .card.manage-course {
+    background-image: url('https://www.impactfactory.com/wp-content/uploads/2024/04/what-types-of-training-do-managers-need.webp');
+}
+
+.cards .card.manage-student {
+    background-image: url('https://education.adaptit.tech/wp-content/uploads/2020/08/How-do-student-management-systems-address-the-biggest-challenges-of-higher-education-institutions_-1.png');
+}
+
+.cards .card.manage-faculty {
+    background-image: url('https://img.freepik.com/free-photo/report-session_1098-15776.jpg?semt=ais_hybrid&w=740&q=80');
+}
+
+.cards .card.total-budget {
+    background-image: url('https://www.shutterstock.com/image-photo/wooden-blocks-word-budget-on-600nw-2488064205.jpg');
+}
+
+.cards .card.Advertisement{
+    background-image: url('https://timesinternet.in/blog/wp-content/uploads/2024/11/Advertisment-ideas.jpg');
+} */
+
+/* overlay */
+/* .cards .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    border-radius: 12px;
+}
+
+.cards .card h3 {
+    color: #fff;
+    z-index: 1;
+    font-size: 22px;
+}
+
+.cards .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+footer{
+    height: 45px;
+    width: 100%;
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+ */

@@ -1,0 +1,265 @@
+{% extends "student/base.html" %}
+{% block content %}
+<!-- <style>
+  .carousel-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .carousel-track {
+    display: flex;
+    gap: 20px;
+    overflow-x: scroll;
+    scroll-behavior: smooth;
+    padding: 20px;
+  }
+
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .course-card {
+    min-width: 250px;
+    background: #fff;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .course-card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .course-card h4 {
+    margin: 10px 0 5px;
+  }
+
+  .course-card p {
+    color: #555;
+    font-weight: bold;
+  }
+
+  .nav-btn {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    border: none;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .nav-btn.left {
+    left: 0;
+  }
+
+  .nav-btn.right {
+    right: 0;
+  }
+</style>
+<div class="carousel-wrapper">
+  <button class="nav-btn left" onclick="scrollLeft()">❮</button>
+
+  <div class="carousel-track" id="carouselTrack">
+    {% for course in courses %}
+    <div class="course-card">
+      {% if course.thumbnail %}
+      <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+      {% endif %}
+
+      <h4>{{ course.title }}</h4>
+      <p>₹ {{ course.price }}</p>
+
+      <a href="{% url 'sandhya:course_videos' course.id %}" class="btn btn-primary btn-sm mt-2">
+        View Course
+      </a>
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <button class="nav-btn right" onclick="scrollRight()">❯</button>
+</div>
+
+
+<script>
+  const track = document.getElementById("carouselTrack");
+  let scrollSpeed = 2;
+  let autoScrollInterval;
+
+
+  function initInfiniteScroll() {
+    track.scrollLeft = track.scrollWidth / 2;
+  }
+
+  function startAutoScroll() {
+    autoScrollInterval = setInterval(() => {
+      track.scrollLeft += scrollSpeed;
+
+      const maxScroll = track.scrollWidth / 2;
+
+      if (track.scrollLeft >= maxScroll * 2) {
+        track.scrollLeft = maxScroll;
+      }
+    }, 0);
+  }
+
+  function stopAutoScroll() {
+    clearInterval(autoScrollInterval);
+  }
+
+
+  window.addEventListener("load", () => {
+    initInfiniteScroll();
+    startAutoScroll();
+  });
+
+
+  track.addEventListener("mouseenter", stopAutoScroll);
+  track.addEventListener("mouseleave", startAutoScroll);
+</script> -->
+
+<style>
+  .course-card {
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+    transition: all 0.3s ease;
+    /* height: 400px;          */
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+  }
+
+  .course-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+
+  /* Hover Lift */
+  .course-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0 12px var(--blue), 0 0 10px var(--text);
+  }
+
+  /* Card Body Layout */
+  .card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+
+  }
+
+  /* TITLE - Single line with dots */
+  .course-title {
+    font-weight: 600;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
+  }
+
+  /* DESCRIPTION - Multi-line clamp */
+  .course-description {
+    font-size: 14px;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    /* MAX 3 LINES */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+
+  /* PRICE */
+  .course-price {
+    font-weight: bold;
+    color: #0d6efd;
+    margin-top: auto;
+    margin-bottom: 10px;
+  }
+
+  /* BUTTON FIXED POSITION */
+  .enroll-btn {
+    margin-top: auto;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  /* Pulse Animation */
+  .enroll-btn {
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(13, 110, 253, 0.6);
+    }
+
+    70% {
+      box-shadow: 0 0 0 10px rgba(13, 110, 253, 0);
+    }
+
+    100% {
+      box-shadow: 0 0 0 0 rgba(13, 110, 253, 0);
+    }
+  }
+</style>
+
+
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-white">Popular Courses</h2>
+    <p class="text-muted">Choose from our wide range of industry-relevant courses</p>
+  </div>
+
+  <div class="row g-4">
+
+    {% for course in courses %}
+    <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+
+      <div class="course-card">
+
+        {% if course.thumbnail %}
+        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+        {% endif %}
+
+        <div class="card-body">
+          <h5 class="course-title">{{ course.title }}</h5>
+
+          <p class="course-description">
+            {{ course.description }}
+          </p>
+
+          <p class="course-price">₹ {{ course.price }}</p>
+
+          <a href="{% url 'sandhya:course_videos' course.id %}" class="btn btn-primary enroll-btn w-100">
+            Enroll
+          </a>
+        </div>
+      </div>
+
+
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+
+{% endblock %}
