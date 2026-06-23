@@ -261,12 +261,14 @@ python manage.py migrate
 **Cause**: Form doesn't have CSRF token
 
 **Fix**: Add to all forms:
+{% raw %}
 ```html
 <form method="POST">
     {% csrf_token %}
     <!-- form fields -->
 </form>
 ```
+{% endraw %}
 
 ---
 
